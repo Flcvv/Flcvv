@@ -11,10 +11,10 @@ from typing import Any
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "profile.svg"
 
 ORIGIN_X = 450.0
-ORIGIN_Y = 310.0
-ISO_X = 1.58
-ISO_Y = 0.84
-SLAB_H = 20.0
+ORIGIN_Y = 385.0
+ISO_X = 1.62
+ISO_Y = 0.86
+SLAB_H = 22.0
 
 
 def iso_point(x: float, y: float, z: float) -> tuple[float, float]:
@@ -79,7 +79,7 @@ def simulate_ai_game(
 ) -> tuple[list[dict[str, Any]], float, dict[str, Any]]:
     x0, x1 = -54.0, 54.0
     y0, y1 = -54.0, 54.0
-    t_cur = t_offset
+    t_cur = round(t_offset + 0.55, 3)
     steps: list[dict[str, Any]] = []
 
     for k in range(1, target_layers + 1):
@@ -92,15 +92,15 @@ def simulate_ai_game(
         colors = slab_colors(hue)
 
         bounces = 1 if (not is_fail_step and rng.random() < 0.22) else 0
-        base_dur = max(1.05, 1.48 - k * 0.025 + rng.uniform(-0.08, 0.10))
+        base_dur = max(1.08, 1.48 - k * 0.022 + rng.uniform(-0.08, 0.10))
         dur = round(base_dur + (0.48 if bounces else 0.0), 3)
 
         if is_fail_step:
             miss_dir = rng.choice([-1.0, 1.0])
-            delta = round(miss_dir * (cur_w + rng.uniform(6.0, 18.0)), 2)
+            delta = round(miss_dir * (cur_w + rng.uniform(7.0, 18.0)), 2)
             t_start = round(t_cur, 3)
             t_drop = round(t_cur + dur * 0.72, 3)
-            t_end = round(t_drop + 0.15, 3)
+            t_end = round(t_drop + 0.25, 3)
             t_cur = t_end
 
             if axis == "x":
@@ -123,13 +123,14 @@ def simulate_ai_game(
                     "t_drop": t_drop,
                     "t_end": t_end,
                     "colors": colors,
-                    "collapse_dx": round(rng.uniform(-55.0, 55.0), 1),
-                    "collapse_dy": round(rng.uniform(210.0, 310.0), 1),
+                    "wobble_dx": 0.0,
+                    "collapse_dx": round(rng.uniform(-75.0, 75.0), 1),
+                    "collapse_dy": round(rng.uniform(280.0, 380.0), 1),
                 }
             )
             break
 
-        if rng.random() < 0.28:
+        if rng.random() < 0.26:
             delta = 0.0
         else:
             max_cut = min(cur_w * 0.36, cur_w - 9.5)
@@ -163,8 +164,9 @@ def simulate_ai_game(
         t_cur = t_end
 
         angle_dir = 1.0 if (k % 2 == 0) else -1.0
-        collapse_dx = round(angle_dir * rng.uniform(25.0, 95.0) + rng.uniform(-15.0, 15.0), 1)
-        collapse_dy = round(rng.uniform(220.0, 340.0), 1)
+        wobble_dx = round(angle_dir * rng.uniform(5.0, 11.0), 1)
+        collapse_dx = round(angle_dir * rng.uniform(45.0, 130.0) + rng.uniform(-20.0, 20.0), 1)
+        collapse_dy = round(rng.uniform(280.0, 420.0), 1)
 
         steps.append(
             {
@@ -181,24 +183,29 @@ def simulate_ai_game(
                 "t_drop": t_drop,
                 "t_end": t_end,
                 "colors": colors,
+                "wobble_dx": wobble_dx,
                 "collapse_dx": collapse_dx,
                 "collapse_dy": collapse_dy,
             }
         )
 
+    placed_count = len(steps) - 1
     t_fail_drop = steps[-1]["t_drop"]
-    t_collapse_start = round(t_fail_drop + 0.18, 3)
-    t_collapse_end = round(t_collapse_start + 0.95, 3)
-    t_reset_done = round(t_collapse_end + 0.55, 3)
+    t_wobble_start = round(t_fail_drop + 0.35, 3)
+    t_collapse_start = round(t_wobble_start + 0.60, 3)
+    collapse_span = round(placed_count * 0.15 + 2.05, 3)
+    t_collapse_end = round(t_collapse_start + collapse_span, 3)
+    t_reset_done = round(t_collapse_end + 0.85, 3)
 
     game_meta = {
         "t_game_start": round(t_offset, 3),
         "t_fail_drop": t_fail_drop,
+        "t_wobble_start": t_wobble_start,
         "t_collapse_start": t_collapse_start,
         "t_collapse_end": t_collapse_end,
         "t_reset_done": t_reset_done,
         "start_hue": start_hue,
-        "placed_count": len(steps) - 1,
+        "placed_count": placed_count,
     }
     return steps, t_reset_done, game_meta
 
@@ -248,6 +255,7 @@ def render_game_svg(
     total_dur: float,
 ) -> str:
     t_game_start = meta["t_game_start"]
+    t_wobble_start = meta["t_wobble_start"]
     t_collapse_start = meta["t_collapse_start"]
     t_collapse_end = meta["t_collapse_end"]
     t_reset_done = meta["t_reset_done"]
@@ -255,25 +263,36 @@ def render_game_svg(
 
     kg_start = round(t_game_start / total_dur, 5)
     kg_pre = max(0.0, round(kg_start - 0.001, 5))
-    kc_start = round(t_collapse_start / total_dur, 5)
-    kc_end = round(t_collapse_end / total_dur, 5)
+    kg_settle = round(min(0.999, (t_game_start + 0.42) / total_dur), 5)
 
-    pedestal_layers: list[str] = []
-    for z_idx in range(-11, 1):
-        p_hue = (meta["start_hue"] + z_idx * 10.0) % 360.0
-        pedestal_layers.append(
-            render_prism_faces(-54.0, 54.0, -54.0, 54.0, float(z_idx - 1), float(z_idx), slab_colors(p_hue))
-        )
-    pedestal_inner = "\n        ".join(pedestal_layers)
+    base_stagger = placed_count * 0.15
+    t_base_col_start = t_collapse_start + base_stagger
+    t_base_col_mid1 = t_base_col_start + 0.55
+    t_base_col_mid2 = t_base_col_start + 1.20
+    t_base_col_end = t_base_col_start + 1.90
+
+    kw_s = round(t_wobble_start / total_dur, 5)
+    kw_m1 = round((t_wobble_start + (t_collapse_start - t_wobble_start) * 0.35) / total_dur, 5)
+    kw_m2 = round((t_wobble_start + (t_collapse_start - t_wobble_start) * 0.72) / total_dur, 5)
+    kb_cs = round(t_base_col_start / total_dur, 5)
+    kb_cm1 = round(t_base_col_mid1 / total_dur, 5)
+    kb_cm2 = round(t_base_col_mid2 / total_dur, 5)
+    kb_ce = round(t_base_col_end / total_dur, 5)
+
+    single_base_layer = render_prism_faces(
+        -54.0, 54.0, -54.0, 54.0, -1.0, 0.0, slab_colors(meta["start_hue"])
+    )
 
     pedestal_svg = (
         f'<g opacity="0">'
-        f"\n        {pedestal_inner}\n      "
+        f"{single_base_layer}"
         f'<animateTransform attributeName="transform" type="translate" '
-        f'values="0 90;0 0;0 0;0 180;0 90" '
-        f'keyTimes="0;{kg_start};{kc_start};{kc_end};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
-        f'<animate attributeName="opacity" values="0;0;1;1;0;0" '
-        f'keyTimes="0;{kg_pre};{kg_start};{kc_start};{kc_end};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+        f'values="0 -45;0 -45;0 0;0 0;-6 0;5 0;0 0;-18 45;-42 155;-68 310;-68 310" '
+        f'keyTimes="0;{kg_start};{kg_settle};{kw_s};{kw_m1};{kw_m2};{kb_cs};{kb_cm1};{kb_cm2};{kb_ce};1" '
+        f'dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+        f'<animate attributeName="opacity" values="0;0;1;1;0.9;0.5;0;0" '
+        f'keyTimes="0;{kg_pre};{kg_start};{kg_settle};{kb_cm1};{kb_cm2};{kb_ce};1" '
+        f'dur="{total_dur:.2f}s" repeatCount="indefinite" />'
         f"</g>"
     )
 
@@ -311,7 +330,7 @@ def render_game_svg(
             trans_values = f"{start_dx:.1f} {start_dy:.1f};{start_dx:.1f} {start_dy:.1f};{end_dx:.1f} {end_dy:.1f};{end_dx:.1f} {end_dy:.1f}"
             trans_kt = f"0;{ks};{kd};1"
         else:
-            k_mid = round((ks + kd) * 0.52, 5)
+            k_mid = round(ks + (kd - ks) * 0.52, 5)
             trans_values = (
                 f"{start_dx:.1f} {start_dy:.1f};"
                 f"{start_dx:.1f} {start_dy:.1f};"
@@ -336,19 +355,19 @@ def render_game_svg(
         if step["slice_box"] is not None:
             sx0, sx1, sy0, sy1, side = step["slice_box"]
             slice_prism = render_prism_faces(sx0, sx1, sy0, sy1, z0, z1, colors)
-            fall_dur = 0.72 if step["failed"] else 0.58
+            fall_dur = 1.15 if step["failed"] else 0.78
             k_fall_mid = round(min(0.995, (t_drop + fall_dur * 0.42) / total_dur), 5)
             k_fall_end = round(min(0.999, (t_drop + fall_dur) / total_dur), 5)
 
-            drift_x = 24.0 if (axis == "x" and delta > 0) or (axis == "y" and delta < 0) else -24.0
-            drop_y = 195.0 if step["failed"] else 140.0
+            drift_x = 32.0 if (axis == "x" and delta > 0) or (axis == "y" and delta < 0) else -32.0
+            drop_y = 260.0 if step["failed"] else 175.0
             slice_anim = (
                 f'<g opacity="0">'
                 f"{slice_prism}"
                 f'<animateTransform attributeName="transform" type="translate" '
-                f'values="0 0;0 0;{drift_x * 0.45:.1f} {drop_y * 0.25:.1f};{drift_x:.1f} {drop_y:.1f};{drift_x:.1f} {drop_y:.1f}" '
+                f'values="0 0;0 0;{drift_x * 0.42:.1f} {drop_y * 0.24:.1f};{drift_x:.1f} {drop_y:.1f};{drift_x:.1f} {drop_y:.1f}" '
                 f'keyTimes="0;{kd};{k_fall_mid};{k_fall_end};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
-                f'<animate attributeName="opacity" values="0;0;1;0.9;0;0" '
+                f'<animate attributeName="opacity" values="0;0;1;0.92;0;0" '
                 f'keyTimes="0;{kd};{kd_post};{k_fall_mid};{k_fall_end};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
                 f"</g>"
             )
@@ -367,15 +386,18 @@ def render_game_svg(
         bx0, bx1, by0, by1 = step["bounds"]
         placed_prism = render_prism_faces(bx0, bx1, by0, by1, z0, z1, colors)
 
-        stagger = max(0.0, (placed_count - k) * 0.032)
-        t_blk_col_start = min(t_collapse_end - 0.25, t_collapse_start + stagger)
-        t_blk_col_mid = min(t_collapse_end - 0.10, t_blk_col_start + 0.22)
-        t_blk_col_end = min(t_reset_done - 0.05, t_blk_col_start + 0.58)
+        stagger = max(0.0, (placed_count - k) * 0.15)
+        t_blk_col_start = t_collapse_start + stagger
+        t_blk_col_mid1 = t_blk_col_start + 0.55
+        t_blk_col_mid2 = t_blk_col_start + 1.20
+        t_blk_col_end = t_blk_col_start + 1.90
 
         k_cs = round(t_blk_col_start / total_dur, 5)
-        k_cm = round(t_blk_col_mid / total_dur, 5)
+        k_cm1 = round(t_blk_col_mid1 / total_dur, 5)
+        k_cm2 = round(t_blk_col_mid2 / total_dur, 5)
         k_ce = round(t_blk_col_end / total_dur, 5)
 
+        wdx = step["wobble_dx"]
         cdx = step["collapse_dx"]
         cdy = step["collapse_dy"]
 
@@ -383,10 +405,12 @@ def render_game_svg(
             f'<g opacity="0">'
             f"{placed_prism}"
             f'<animateTransform attributeName="transform" type="translate" '
-            f'values="0 0;0 0;{cdx * 0.35:.1f} {cdy * 0.22:.1f};{cdx:.1f} {cdy:.1f};{cdx:.1f} {cdy:.1f}" '
-            f'keyTimes="0;{k_cs};{k_cm};{k_ce};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
-            f'<animate attributeName="opacity" values="0;0;1;1;0.85;0;0" '
-            f'keyTimes="0;{kd};{kd_post};{k_cs};{k_cm};{k_ce};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+            f'values="0 0;0 0;{wdx:.1f} 0;{-wdx * 0.8:.1f} 0;0 0;{cdx * 0.25:.1f} {cdy * 0.14:.1f};{cdx * 0.62:.1f} {cdy * 0.48:.1f};{cdx:.1f} {cdy:.1f};{cdx:.1f} {cdy:.1f}" '
+            f'keyTimes="0;{kw_s};{kw_m1};{kw_m2};{k_cs};{k_cm1};{k_cm2};{k_ce};1" '
+            f'dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+            f'<animate attributeName="opacity" values="0;0;1;1;0.95;0.65;0;0" '
+            f'keyTimes="0;{kd};{kd_post};{k_cs};{k_cm1};{k_cm2};{k_ce};1" '
+            f'dur="{total_dur:.2f}s" repeatCount="indefinite" />'
             f"</g>"
         )
 
@@ -414,13 +438,13 @@ def build_multi_game_camera(
             if step["failed"]:
                 continue
             k = step["k"]
-            cam_prev = max(0.0, (k - 3) * SLAB_H)
-            cam_curr = max(0.0, (k - 2) * SLAB_H)
+            cam_prev = max(0.0, (k - 5) * SLAB_H)
+            cam_curr = max(0.0, (k - 4) * SLAB_H)
             if cam_curr == cam_prev:
                 continue
 
             t_drop = step["t_drop"]
-            t_settled = min(meta["t_collapse_start"] - 0.05, t_drop + 0.34)
+            t_settled = min(meta["t_wobble_start"] - 0.05, t_drop + 0.36)
             kt_d = round(t_drop / total_dur, 5)
             kt_s = round(t_settled / total_dur, 5)
 
@@ -431,7 +455,7 @@ def build_multi_game_camera(
                 key_times.append(f"{kt_s}")
                 values.append(f"0 {cam_curr:.1f}")
 
-        top_cam = max(0.0, (meta["placed_count"] - 2) * SLAB_H)
+        top_cam = max(0.0, (meta["placed_count"] - 4) * SLAB_H)
         kt_col_s = round(meta["t_collapse_start"] / total_dur, 5)
         kt_col_e = round(meta["t_collapse_end"] / total_dur, 5)
 
