@@ -311,7 +311,7 @@
     <!-- Footer: Library Postmark & Botanical Barcode -->
     <line x1="36" y1="432" x2="820" y2="432" stroke="#D5C7B2" stroke-width="1" />
     <text x="38" y="450" class="typewriter-xs" fill="#7D6B5D">POSTMARKED BY GITHUB ACTIONS • WOODLAND PARCEL SERVICE</text>
-    <text x="38" y="465" class="serif-italic" fill="#8C7765">Last pressed: Oct 24, 2026 • 01:49 UTC • github.com/Flcvv</text>
+    <text x="38" y="465" class="serif-italic" fill="#8C7765">Last pressed: Oct 24, 2026 • 01:52 UTC • github.com/Flcvv</text>
 
     <!-- Herbarium Stem Barcode -->
     <rect x="580" y="436" width="2" height="22" rx="0.8" fill="#5E8C6A" fill-opacity="0.45" />
