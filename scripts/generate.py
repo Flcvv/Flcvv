@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 """
-Pure 3D Isometric Stack Tower Game SVG Generator (`profile.svg`).
+Unpredictable AI 3D Isometric Stack Tower Game SVG Generator (`profile.svg`).
 
-Renders an endless, seamless 20-stage 3D isometric block-stacking game
-inspired by Ketchapp's Stack — complete with alternating axis slides,
-overhang slicing & falling physics, perfect-drop shockwave rings, combo
-expansion, and zero UI clutter.
+Simulates an autonomous AI playing multiple games of 3D Isometric Stack:
+- Strict physical support: each block is strictly clipped to the supporting platform
+  below it (never wider than the layer underneath, never floating on thin air).
+- As slices accumulate, the platform gets thinner and thinner until the AI misses.
+- When the AI fails, the missed slab plummets, the entire stacked tower collapses
+  in a cascading 3D physics tumble, and the foundation resets from the beginning
+  for the next unpredictable AI run.
 """
 
 from __future__ import annotations
 
 import colorsys
-import math
+import os
+import random
+import time
 from pathlib import Path
 from typing import Any
 
@@ -20,10 +25,10 @@ OUTPUT_PATH = Path(__file__).resolve().parent.parent / "profile.svg"
 
 # Isometric projection constants
 ORIGIN_X = 450.0
-ORIGIN_Y = 230.0
-ISO_X = 1.55       # horizontal pixel scale per world unit
-ISO_Y = 0.82       # vertical pixel scale per world unit (isometric ~2:1 tilt)
-SLAB_H = 21.0      # pixel height of each 3D slab
+ORIGIN_Y = 310.0
+ISO_X = 1.58       # horizontal pixel scale per world unit
+ISO_Y = 0.84       # vertical pixel scale per world unit
+SLAB_H = 20.0      # vertical thickness of each 3D platform slab
 
 
 def iso_point(x: float, y: float, z: float) -> tuple[float, float]:
@@ -42,16 +47,11 @@ def hsl_hex(h_deg: float, s: float, l: float) -> str:
     return f"#{int(round(r * 255)):02X}{int(round(g * 255)):02X}{int(round(b * 255)):02X}"
 
 
-def slab_colors(step_index: int, total_steps: int = 20) -> tuple[str, str, str]:
-    """
-    Returns (top_face_hex, left_face_hex, right_face_hex) for a given block index,
-    cycling smoothly through a full 360-degree pastel/vibrant Stack spectrum.
-    """
-    # Start around warm coral/rose (348 deg) and sweep smoothly across the full wheel
-    hue = (348.0 + (step_index % total_steps) * (360.0 / total_steps)) % 360.0
-    top = hsl_hex(hue, 0.78, 0.68)
-    left = hsl_hex((hue - 4) % 360.0, 0.72, 0.56)   # sunlit front-left face
-    right = hsl_hex((hue + 6) % 360.0, 0.68, 0.43)  # shadowed front-right face
+def slab_colors(hue_deg: float) -> tuple[str, str, str]:
+    """Returns (top_face_hex, left_face_hex, right_face_hex) for a given hue."""
+    top = hsl_hex(hue_deg, 0.76, 0.67)
+    left = hsl_hex((hue_deg - 5.0) % 360.0, 0.70, 0.55)
+    right = hsl_hex((hue_deg + 7.0) % 360.0, 0.66, 0.42)
     return top, left, right
 
 
@@ -64,16 +64,14 @@ def render_prism_faces(
     z1: float,
     colors: tuple[str, str, str],
 ) -> str:
-    """Renders the 3 visible isometric faces (Top, Left-Front, Right-Front) of a 3D box."""
+    """Renders the 3 visible isometric faces (Left-Front, Right-Front, Top) of a 3D box."""
     top_col, left_col, right_col = colors
 
-    # Top face at z = z1
     t_back = iso_point(x0, y0, z1)
     t_right = iso_point(x1, y0, z1)
     t_front = iso_point(x1, y1, z1)
     t_left = iso_point(x0, y1, z1)
 
-    # Bottom front vertices at z = z0
     b_right = iso_point(x1, y0, z0)
     b_front = iso_point(x1, y1, z0)
     b_left = iso_point(x0, y1, z0)
@@ -89,88 +87,128 @@ def render_prism_faces(
     )
 
 
-def build_choreography() -> list[dict[str, Any]]:
+def simulate_ai_game(
+    rng: random.Random,
+    target_layers: int,
+    start_hue: float,
+    hue_step: float,
+    t_offset: float,
+) -> tuple[list[dict[str, Any]], float, dict[str, Any]]:
     """
-    Builds a 20-block choreography that shrinks via realistic overhang slices on both
-    axes, hits streaks of Perfect placements, and recovers back to [-50, 50] x [-50, 50]
-    at step 10 and step 20 so the infinite climb has zero loop seam.
+    Simulates a single AI game of Stack with strict physical support:
+    - Starts on a [-54, 54] x [-54, 54] base platform.
+    - Each layer k slides in with the EXACT size of layer k-1.
+    - Placed block is strictly the intersection with layer k-1 (never wider!).
+    - Overhang is sliced off and falls away.
+    - On the final step, the AI misses the narrow platform completely (0 overlap),
+      triggering a full tower collapse and reset.
     """
-    # Each tuple: (axis, delta, bounce_passes, duration_sec, expand_to_50)
-    # delta > 0: front overhang slice (+x front-right or +y front-left)
-    # delta < 0: back overhang slice (-x back-left or -y back-right)
-    # delta == 0: PERFECT drop!
-    moves = [
-        # Wave 1: Sculpting down to a mid-sized tower, then a 4x Perfect recovery
-        ("x", 0.0, 0, 1.55, False),     # 1: Perfect!
-        ("y", 14.0, 0, 1.65, False),    # 2: Slice front-left (+y)
-        ("x", 16.0, 0, 1.60, False),    # 3: Slice front-right (+x)
-        ("y", 0.0, 1, 2.15, False),     # 4: Hesitation bounce -> Perfect!
-        ("x", -12.0, 0, 1.55, False),   # 5: Slice back-left (-x)
-        ("y", -14.0, 0, 1.60, False),   # 6: Slice back-right (-y)
-        ("x", 0.0, 0, 1.45, False),     # 7: Perfect streak 1
-        ("y", 0.0, 0, 1.45, False),     # 8: Perfect streak 2
-        ("x", 0.0, 0, 1.50, True),      # 9: Perfect streak 3 -> Expand X to [-50, 50]
-        ("y", 0.0, 0, 1.50, True),      # 10: Perfect streak 4 -> Expand Y to [-50, 50]
-        # Wave 2: Faster slices down to a dramatic narrow spire, then combo recovery
-        ("x", 20.0, 0, 1.50, False),    # 11: Slice front-right (+x)
-        ("y", -18.0, 0, 1.55, False),   # 12: Slice back-right (-y)
-        ("x", -16.0, 1, 2.10, False),   # 13: Hesitation bounce -> Slice back-left (-x)
-        ("y", 18.0, 0, 1.50, False),    # 14: Slice front-left (+y)
-        ("x", 12.0, 0, 1.45, False),    # 15: Narrow slice front-right (+x)
-        ("y", -12.0, 0, 1.45, False),   # 16: Narrow slice back-right (-y)
-        ("x", 0.0, 0, 1.40, False),     # 17: Clutch Perfect 1!
-        ("y", 0.0, 0, 1.40, False),     # 18: Clutch Perfect 2!
-        ("x", 0.0, 0, 1.50, True),      # 19: Clutch Perfect 3 -> Expand X to [-50, 50]
-        ("y", 0.0, 0, 1.50, True),      # 20: Clutch Perfect 4 -> Expand Y to [-50, 50]
-    ]
-
-    x0, x1 = -50.0, 50.0
-    y0, y1 = -50.0, 50.0
-    t_cursor = 0.0
-
+    x0, x1 = -54.0, 54.0
+    y0, y1 = -54.0, 54.0
+    t_cur = t_offset
     steps: list[dict[str, Any]] = []
-    for idx, (axis, delta, bounces, dur, expand) in enumerate(moves, start=1):
-        prev_x0, prev_x1 = x0, x1
-        prev_y0, prev_y1 = y0, y1
+
+    for k in range(1, target_layers + 1):
+        axis = "x" if (k % 2 == 1) else "y"
+        prev_x0, prev_x1, prev_y0, prev_y1 = x0, x1, y0, y1
+        cur_w = (x1 - x0) if axis == "x" else (y1 - y0)
+
+        is_fail_step = (k == target_layers) or (cur_w < 11.0)
+        hue = (start_hue + k * hue_step) % 360.0
+        colors = slab_colors(hue)
+
+        # Slide speed speeds up slightly as the tower gets higher, plus occasional AI hesitation bounce
+        bounces = 1 if (not is_fail_step and rng.random() < 0.22) else 0
+        base_dur = max(1.05, 1.48 - k * 0.025 + rng.uniform(-0.08, 0.10))
+        dur = round(base_dur + (0.48 if bounces else 0.0), 3)
+
+        if is_fail_step:
+            # AI misses the platform completely!
+            miss_dir = rng.choice([-1.0, 1.0])
+            # Offset exceeds cur_w so intersection is empty
+            delta = round(miss_dir * (cur_w + rng.uniform(6.0, 18.0)), 2)
+            t_start = round(t_cur, 3)
+            t_drop = round(t_cur + dur * 0.72, 3)
+            t_end = round(t_drop + 0.15, 3)
+            t_cur = t_end
+
+            if axis == "x":
+                miss_box = (prev_x0 + delta, prev_x1 + delta, prev_y0, prev_y1)
+            else:
+                miss_box = (prev_x0, prev_x1, prev_y0 + delta, prev_y1 + delta)
+
+            steps.append(
+                {
+                    "k": k,
+                    "axis": axis,
+                    "delta": delta,
+                    "bounces": bounces,
+                    "failed": True,
+                    "perfect": False,
+                    "prev_bounds": (prev_x0, prev_x1, prev_y0, prev_y1),
+                    "bounds": None,
+                    "slice_box": (*miss_box, "front" if delta > 0 else "back"),
+                    "t_start": t_start,
+                    "t_drop": t_drop,
+                    "t_end": t_end,
+                    "colors": colors,
+                    "collapse_dx": round(rng.uniform(-55.0, 55.0), 1),
+                    "collapse_dy": round(rng.uniform(210.0, 310.0), 1),
+                }
+            )
+            break
+
+        # Decide whether AI lands a Perfect drop or slices off a piece
+        if rng.random() < 0.28:
+            delta = 0.0
+        else:
+            # Slice off a fraction of the remaining width so it steadily gets thinner
+            max_cut = min(cur_w * 0.36, cur_w - 9.5)
+            min_cut = min(4.5, max_cut * 0.5)
+            if max_cut <= 2.0:
+                delta = 0.0
+            else:
+                cut_mag = round(rng.uniform(min_cut, max_cut), 2)
+                delta = cut_mag if rng.random() < 0.52 else -cut_mag
+
         slice_box = None
-
-        if expand:
-            if axis == "x":
-                x0, x1 = -50.0, 50.0
-            else:
-                y0, y1 = -50.0, 50.0
-        elif delta != 0.0:
+        if delta != 0.0:
             if axis == "x":
                 if delta > 0:
-                    # Shifted toward +x (front-right): overhang is [x1, x1 + delta]
+                    # Shifted toward +x (front-right): supported intersection is [x0 + delta, x1]
                     slice_box = (x1, x1 + delta, y0, y1, "front")
-                    x0 = x0 + delta
+                    x0 = round(x0 + delta, 2)
                 else:
-                    # Shifted toward -x (back-left): overhang is [x0 + delta, x0]
+                    # Shifted toward -x (back-left): supported intersection is [x0, x1 + delta]
                     slice_box = (x0 + delta, x0, y0, y1, "back")
-                    x1 = x1 + delta
+                    x1 = round(x1 + delta, 2)
             else:
                 if delta > 0:
-                    # Shifted toward +y (front-left): overhang is [y1, y1 + delta]
+                    # Shifted toward +y (front-left): supported intersection is [y0 + delta, y1]
                     slice_box = (x0, x1, y1, y1 + delta, "front")
-                    y0 = y0 + delta
+                    y0 = round(y0 + delta, 2)
                 else:
-                    # Shifted toward -y (back-right): overhang is [y0 + delta, y0]
+                    # Shifted toward -y (back-right): supported intersection is [y0, y1 + delta]
                     slice_box = (x0, x1, y0 + delta, y0, "back")
-                    y1 = y1 + delta
+                    y1 = round(y1 + delta, 2)
 
-        t_start = round(t_cursor, 3)
-        t_drop = round(t_cursor + dur * 0.74, 3)
-        t_end = round(t_cursor + dur, 3)
-        t_cursor = t_end
+        t_start = round(t_cur, 3)
+        t_drop = round(t_cur + dur * 0.74, 3)
+        t_end = round(t_cur + dur, 3)
+        t_cur = t_end
+
+        # Assign a random 3D collapse vector for when the tower eventually collapses
+        angle_dir = 1.0 if (k % 2 == 0) else -1.0
+        collapse_dx = round(angle_dir * rng.uniform(25.0, 95.0) + rng.uniform(-15.0, 15.0), 1)
+        collapse_dy = round(rng.uniform(220.0, 340.0), 1)
 
         steps.append(
             {
-                "k": idx,
+                "k": k,
                 "axis": axis,
                 "delta": delta,
                 "bounces": bounces,
-                "expand": expand,
+                "failed": False,
                 "perfect": (delta == 0.0),
                 "prev_bounds": (prev_x0, prev_x1, prev_y0, prev_y1),
                 "bounds": (x0, x1, y0, y1),
@@ -178,11 +216,28 @@ def build_choreography() -> list[dict[str, Any]]:
                 "t_start": t_start,
                 "t_drop": t_drop,
                 "t_end": t_end,
-                "colors": slab_colors(idx, len(moves)),
+                "colors": colors,
+                "collapse_dx": collapse_dx,
+                "collapse_dy": collapse_dy,
             }
         )
 
-    return steps
+    # Collapse & Reset window after the fail drop
+    t_fail_drop = steps[-1]["t_drop"]
+    t_collapse_start = round(t_fail_drop + 0.18, 3)
+    t_collapse_end = round(t_collapse_start + 0.95, 3)
+    t_reset_done = round(t_collapse_end + 0.55, 3)
+
+    game_meta = {
+        "t_game_start": round(t_offset, 3),
+        "t_fail_drop": t_fail_drop,
+        "t_collapse_start": t_collapse_start,
+        "t_collapse_end": t_collapse_end,
+        "t_reset_done": t_reset_done,
+        "start_hue": start_hue,
+        "placed_count": len(steps) - 1,
+    }
+    return steps, t_reset_done, game_meta
 
 
 def render_perfect_ring(
@@ -193,11 +248,10 @@ def render_perfect_ring(
     z_bottom: float,
     t_drop: float,
     total_dur: float,
-    is_expand: bool,
 ) -> str:
-    """Renders the signature Stack expanding isometric glow ring on a Perfect drop."""
-    pad_start = 2.0
-    pad_end = 22.0 if is_expand else 14.0
+    """Renders the expanding white isometric glow ring on a Perfect drop."""
+    pad_start = 1.5
+    pad_end = 13.0
 
     p_start = [
         iso_point(x0 - pad_start, y0 - pad_start, z_bottom),
@@ -213,152 +267,242 @@ def render_perfect_ring(
     ]
 
     k0 = round(t_drop / total_dur, 5)
-    k1 = round(min(0.999, (t_drop + 0.48) / total_dur), 5)
-    stroke_col = "#FFFBEB" if is_expand else "#FFFFFF"
-    stroke_w = 4.5 if is_expand else 3.0
+    k1 = round(min(0.999, (t_drop + 0.42) / total_dur), 5)
 
     return (
-        f'<polygon points="{fmt_pts(p_start)}" fill="none" stroke="{stroke_col}" '
-        f'stroke-width="{stroke_w}" opacity="0" stroke-linejoin="round">'
+        f'<polygon points="{fmt_pts(p_start)}" fill="none" stroke="#FFFFFF" '
+        f'stroke-width="2.8" opacity="0" stroke-linejoin="round">'
         f'<animate attributeName="points" values="{fmt_pts(p_start)};{fmt_pts(p_start)};{fmt_pts(p_end)};{fmt_pts(p_end)}" '
         f'keyTimes="0;{k0};{k1};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
-        f'<animate attributeName="opacity" values="0;0;0.95;0;0" '
-        f'keyTimes="0;{max(0.0, round(k0 - 0.002, 5))};{k0};{k1};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+        f'<animate attributeName="opacity" values="0;0;0.92;0;0" '
+        f'keyTimes="0;{max(0.0, round(k0 - 0.001, 5))};{k0};{k1};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
         f"</polygon>"
     )
 
 
-def render_step_elements(step: dict[str, Any], total_dur: float) -> tuple[str, str]:
+def render_game_svg(
+    steps: list[dict[str, Any]],
+    meta: dict[str, Any],
+    total_dur: float,
+) -> str:
     """
-    Returns (back_slice_svg, main_step_svg) for step k.
-    If a slice occurs on the back side, back_slice_svg is placed before the tower layer
-    so it falls behind the tower in 3D space.
+    Renders a single AI game (pedestal + sliding blocks + sliced overhangs +
+    collapsing tower on failure).
     """
-    k = step["k"]
-    z0, z1 = float(k - 1), float(k)
-    axis = step["axis"]
-    delta = step["delta"]
-    bounces = step["bounces"]
-    prev_x0, prev_x1, prev_y0, prev_y1 = step["prev_bounds"]
-    x0, x1, y0, y1 = step["bounds"]
-    colors = step["colors"]
-    t_start = step["t_start"]
-    t_drop = step["t_drop"]
+    t_game_start = meta["t_game_start"]
+    t_collapse_start = meta["t_collapse_start"]
+    t_collapse_end = meta["t_collapse_end"]
+    t_reset_done = meta["t_reset_done"]
+    placed_count = meta["placed_count"]
 
-    ks = round(t_start / total_dur, 5)
-    kd = round(t_drop / total_dur, 5)
-    ks_pre = max(0.0, round(ks - 0.001, 5))
-    kd_post = min(1.0, round(kd + 0.001, 5))
+    kg_start = round(t_game_start / total_dur, 5)
+    kg_pre = max(0.0, round(kg_start - 0.001, 5))
+    kc_start = round(t_collapse_start / total_dur, 5)
+    kc_end = round(t_collapse_end / total_dur, 5)
+    kr_done = round(min(1.0, t_reset_done / total_dur), 5)
 
-    # 1. Sliding incoming block (visible only during [t_start, t_drop])
-    slide_dist = 155.0
-    if axis == "x":
-        # Slides in from back-left (-x) toward front-right (+x)
-        start_dx, start_dy = iso_point(-slide_dist, 0, 0)[0] - ORIGIN_X, iso_point(-slide_dist, 0, 0)[1] - ORIGIN_Y
-        over_dx, over_dy = iso_point(55.0, 0, 0)[0] - ORIGIN_X, iso_point(55.0, 0, 0)[1] - ORIGIN_Y
-        end_dx, end_dy = iso_point(delta, 0, 0)[0] - ORIGIN_X, iso_point(delta, 0, 0)[1] - ORIGIN_Y
-    else:
-        # Slides in from back-right (-y) toward front-left (+y)
-        start_dx, start_dy = iso_point(0, -slide_dist, 0)[0] - ORIGIN_X, iso_point(0, -slide_dist, 0)[1] - ORIGIN_Y
-        over_dx, over_dy = iso_point(0, 55.0, 0)[0] - ORIGIN_X, iso_point(0, 55.0, 0)[1] - ORIGIN_Y
-        end_dx, end_dy = iso_point(0, delta, 0)[0] - ORIGIN_X, iso_point(0, delta, 0)[1] - ORIGIN_Y
-
-    sliding_prism = render_prism_faces(prev_x0, prev_x1, prev_y0, prev_y1, z0, z1, colors)
-
-    if bounces == 0:
-        trans_values = f"{start_dx:.1f} {start_dy:.1f};{start_dx:.1f} {start_dy:.1f};{end_dx:.1f} {end_dy:.1f};{end_dx:.1f} {end_dy:.1f}"
-        trans_kt = f"0;{ks};{kd};1"
-    else:
-        k_mid = round((ks + kd) * 0.52, 5)
-        trans_values = (
-            f"{start_dx:.1f} {start_dy:.1f};"
-            f"{start_dx:.1f} {start_dy:.1f};"
-            f"{over_dx:.1f} {over_dy:.1f};"
-            f"{end_dx:.1f} {end_dy:.1f};"
-            f"{end_dx:.1f} {end_dy:.1f}"
+    # 1. Foundation Pedestal (z = -12 .. 0, bounds [-54, 54] x [-54, 54])
+    # Collapses downward when the tower collapses, and rises back up for the next game
+    pedestal_layers: list[str] = []
+    for z_idx in range(-11, 1):
+        p_hue = (meta["start_hue"] + z_idx * 10.0) % 360.0
+        pedestal_layers.append(
+            render_prism_faces(-54.0, 54.0, -54.0, 54.0, float(z_idx - 1), float(z_idx), slab_colors(p_hue))
         )
-        trans_kt = f"0;{ks};{k_mid};{kd};1"
+    pedestal_inner = "\n        ".join(pedestal_layers)
 
-    sliding_svg = (
+    # Pedestal visibility & collapse motion during this game's window
+    pedestal_svg = (
         f'<g opacity="0">'
-        f"{sliding_prism}"
+        f"\n        {pedestal_inner}\n      "
         f'<animateTransform attributeName="transform" type="translate" '
-        f'values="{trans_values}" keyTimes="{trans_kt}" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+        f'values="0 90;0 0;0 0;0 180;0 90" '
+        f'keyTimes="0;{kg_start};{kc_start};{kc_end};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
         f'<animate attributeName="opacity" values="0;0;1;1;0;0" '
-        f'keyTimes="0;{ks_pre};{ks};{kd};{kd_post};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+        f'keyTimes="0;{kg_pre};{kg_start};{kc_start};{kc_end};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
         f"</g>"
     )
 
-    # 2. Settled placed block (visible from t_drop to end of cycle)
-    placed_prism = render_prism_faces(x0, x1, y0, y1, z0, z1, colors)
-    placed_svg = (
-        f'<g opacity="0">'
-        f"{placed_prism}"
-        f'<animate attributeName="opacity" values="0;0;1;1" '
-        f'keyTimes="0;{kd};{kd_post};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
-        f"</g>"
-    )
+    layers_svg: list[str] = [pedestal_svg]
 
-    # 3. Optional Perfect flash ring or Falling overhang slice
-    extra_front = ""
-    extra_back = ""
+    for step in steps:
+        k = step["k"]
+        z0, z1 = float(k - 1), float(k)
+        axis = step["axis"]
+        delta = step["delta"]
+        bounces = step["bounces"]
+        prev_x0, prev_x1, prev_y0, prev_y1 = step["prev_bounds"]
+        colors = step["colors"]
+        t_start = step["t_start"]
+        t_drop = step["t_drop"]
 
-    if step["perfect"]:
-        extra_front = render_perfect_ring(x0, x1, y0, y1, z0, t_drop, total_dur, step["expand"])
-    elif step["slice_box"] is not None:
-        sx0, sx1, sy0, sy1, side = step["slice_box"]
-        slice_prism = render_prism_faces(sx0, sx1, sy0, sy1, z0, z1, colors)
-        k_fall_mid = round(min(0.995, (t_drop + 0.25) / total_dur), 5)
-        k_fall_end = round(min(0.999, (t_drop + 0.62) / total_dur), 5)
+        ks = round(t_start / total_dur, 5)
+        kd = round(t_drop / total_dur, 5)
+        ks_pre = max(0.0, round(ks - 0.001, 5))
+        kd_post = min(1.0, round(kd + 0.001, 5))
 
-        # Drift slightly outward along slice direction while dropping under gravity
-        drift_x = 18.0 if (axis == "x" and delta > 0) or (axis == "y" and delta < 0) else -18.0
-        slice_anim = (
+        # Sliding incoming block (always has exact dimensions of prev_bounds!)
+        slide_dist = 148.0
+        if axis == "x":
+            start_dx, start_dy = iso_point(-slide_dist, 0, 0)[0] - ORIGIN_X, iso_point(-slide_dist, 0, 0)[1] - ORIGIN_Y
+            over_dx, over_dy = iso_point(52.0, 0, 0)[0] - ORIGIN_X, iso_point(52.0, 0, 0)[1] - ORIGIN_Y
+            end_dx, end_dy = iso_point(delta, 0, 0)[0] - ORIGIN_X, iso_point(delta, 0, 0)[1] - ORIGIN_Y
+        else:
+            start_dx, start_dy = iso_point(0, -slide_dist, 0)[0] - ORIGIN_X, iso_point(0, -slide_dist, 0)[1] - ORIGIN_Y
+            over_dx, over_dy = iso_point(0, 52.0, 0)[0] - ORIGIN_X, iso_point(0, 52.0, 0)[1] - ORIGIN_Y
+            end_dx, end_dy = iso_point(0, delta, 0)[0] - ORIGIN_X, iso_point(0, delta, 0)[1] - ORIGIN_Y
+
+        sliding_prism = render_prism_faces(prev_x0, prev_x1, prev_y0, prev_y1, z0, z1, colors)
+
+        if bounces == 0:
+            trans_values = f"{start_dx:.1f} {start_dy:.1f};{start_dx:.1f} {start_dy:.1f};{end_dx:.1f} {end_dy:.1f};{end_dx:.1f} {end_dy:.1f}"
+            trans_kt = f"0;{ks};{kd};1"
+        else:
+            k_mid = round((ks + kd) * 0.52, 5)
+            trans_values = (
+                f"{start_dx:.1f} {start_dy:.1f};"
+                f"{start_dx:.1f} {start_dy:.1f};"
+                f"{over_dx:.1f} {over_dy:.1f};"
+                f"{end_dx:.1f} {end_dy:.1f};"
+                f"{end_dx:.1f} {end_dy:.1f}"
+            )
+            trans_kt = f"0;{ks};{k_mid};{kd};1"
+
+        sliding_svg = (
             f'<g opacity="0">'
-            f"{slice_prism}"
+            f"{sliding_prism}"
             f'<animateTransform attributeName="transform" type="translate" '
-            f'values="0 0;0 0;{drift_x * 0.4:.1f} 28;{drift_x:.1f} 135;{drift_x:.1f} 135" '
-            f'keyTimes="0;{kd};{k_fall_mid};{k_fall_end};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
-            f'<animate attributeName="opacity" values="0;0;1;0.85;0;0" '
-            f'keyTimes="0;{kd};{kd_post};{k_fall_mid};{k_fall_end};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+            f'values="{trans_values}" keyTimes="{trans_kt}" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+            f'<animate attributeName="opacity" values="0;0;1;1;0;0" '
+            f'keyTimes="0;{ks_pre};{ks};{kd};{kd_post};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
             f"</g>"
         )
-        if side == "back":
-            extra_back = slice_anim
-        else:
-            extra_front = slice_anim
 
-    main_svg = f"{sliding_svg}\n      {placed_svg}\n      {extra_front}"
-    return extra_back, main_svg
+        # Falling sliced piece (or missed whole block on fail step!)
+        extra_back = ""
+        extra_front = ""
+        if step["slice_box"] is not None:
+            sx0, sx1, sy0, sy1, side = step["slice_box"]
+            slice_prism = render_prism_faces(sx0, sx1, sy0, sy1, z0, z1, colors)
+            fall_dur = 0.72 if step["failed"] else 0.58
+            k_fall_mid = round(min(0.995, (t_drop + fall_dur * 0.42) / total_dur), 5)
+            k_fall_end = round(min(0.999, (t_drop + fall_dur) / total_dur), 5)
+
+            drift_x = 24.0 if (axis == "x" and delta > 0) or (axis == "y" and delta < 0) else -24.0
+            drop_y = 195.0 if step["failed"] else 140.0
+            slice_anim = (
+                f'<g opacity="0">'
+                f"{slice_prism}"
+                f'<animateTransform attributeName="transform" type="translate" '
+                f'values="0 0;0 0;{drift_x * 0.45:.1f} {drop_y * 0.25:.1f};{drift_x:.1f} {drop_y:.1f};{drift_x:.1f} {drop_y:.1f}" '
+                f'keyTimes="0;{kd};{k_fall_mid};{k_fall_end};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+                f'<animate attributeName="opacity" values="0;0;1;0.9;0;0" '
+                f'keyTimes="0;{kd};{kd_post};{k_fall_mid};{k_fall_end};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+                f"</g>"
+            )
+            if side == "back":
+                extra_back = slice_anim
+            else:
+                extra_front = slice_anim
+
+        if step["failed"]:
+            # No placed block on the fail step — the whole slab missed!
+            if extra_back:
+                insert_pos = max(0, len(layers_svg) - 2)
+                layers_svg.insert(insert_pos, extra_back)
+            layers_svg.append(f"{sliding_svg}\n      {extra_front}")
+            continue
+
+        # Placed supported block: stays on tower from t_drop until t_collapse_start,
+        # then cascades & collapses downward with staggered 3D physics!
+        bx0, bx1, by0, by1 = step["bounds"]
+        placed_prism = render_prism_faces(bx0, bx1, by0, by1, z0, z1, colors)
+
+        # Stagger top blocks to buckle first during collapse
+        stagger = max(0.0, (placed_count - k) * 0.032)
+        t_blk_col_start = min(t_collapse_end - 0.25, t_collapse_start + stagger)
+        t_blk_col_mid = min(t_collapse_end - 0.10, t_blk_col_start + 0.22)
+        t_blk_col_end = min(t_reset_done - 0.05, t_blk_col_start + 0.58)
+
+        k_cs = round(t_blk_col_start / total_dur, 5)
+        k_cm = round(t_blk_col_mid / total_dur, 5)
+        k_ce = round(t_blk_col_end / total_dur, 5)
+
+        cdx = step["collapse_dx"]
+        cdy = step["collapse_dy"]
+
+        placed_svg = (
+            f'<g opacity="0">'
+            f"{placed_prism}"
+            f'<animateTransform attributeName="transform" type="translate" '
+            f'values="0 0;0 0;{cdx * 0.35:.1f} {cdy * 0.22:.1f};{cdx:.1f} {cdy:.1f};{cdx:.1f} {cdy:.1f}" '
+            f'keyTimes="0;{k_cs};{k_cm};{k_ce};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+            f'<animate attributeName="opacity" values="0;0;1;1;0.85;0;0" '
+            f'keyTimes="0;{kd};{kd_post};{k_cs};{k_cm};{k_ce};1" dur="{total_dur:.2f}s" repeatCount="indefinite" />'
+            f"</g>"
+        )
+
+        if step["perfect"]:
+            extra_front = render_perfect_ring(bx0, bx1, by0, by1, z0, t_drop, total_dur)
+
+        if extra_back:
+            insert_pos = max(0, len(layers_svg) - 2)
+            layers_svg.insert(insert_pos, extra_back)
+
+        layers_svg.append(f"{sliding_svg}\n      {placed_svg}\n      {extra_front}")
+
+    return "\n      ".join(layers_svg)
 
 
-def build_camera_animation(steps: list[dict[str, Any]], total_dur: float) -> str:
+def build_multi_game_camera(
+    all_games: list[tuple[list[dict[str, Any]], dict[str, Any]]],
+    total_dur: float,
+) -> str:
     """
-    Smoothly pans the tower world downward by SLAB_H each time a block is placed,
-    reaching +20 * SLAB_H at the end of the 20-block cycle.
+    Tracks the rising tower during each game and swoops back down to 0
+    when the tower collapses and restarts from the beginning.
     """
     key_times: list[str] = ["0"]
     values: list[str] = ["0 0"]
 
-    for step in steps:
-        k = step["k"]
-        t_drop = step["t_drop"]
-        t_settled = min(total_dur - 0.02, t_drop + 0.36)
+    for steps, meta in all_games:
+        for step in steps:
+            if step["failed"]:
+                continue
+            k = step["k"]
+            # Camera begins panning after layer 3 so the tower stays centered
+            cam_prev = max(0.0, (k - 3) * SLAB_H)
+            cam_curr = max(0.0, (k - 2) * SLAB_H)
+            if cam_curr == cam_prev:
+                continue
 
-        kt_drop = round(t_drop / total_dur, 5)
-        kt_settled = round(t_settled / total_dur, 5)
+            t_drop = step["t_drop"]
+            t_settled = min(meta["t_collapse_start"] - 0.05, t_drop + 0.34)
+            kt_d = round(t_drop / total_dur, 5)
+            kt_s = round(t_settled / total_dur, 5)
 
-        prev_y = (k - 1) * SLAB_H
-        curr_y = k * SLAB_H
+            if kt_d > float(key_times[-1]):
+                key_times.append(f"{kt_d}")
+                values.append(f"0 {cam_prev:.1f}")
+            if kt_s > float(key_times[-1]):
+                key_times.append(f"{kt_s}")
+                values.append(f"0 {cam_curr:.1f}")
 
-        key_times.append(f"{kt_drop}")
-        values.append(f"0 {prev_y:.1f}")
+        # During tower collapse, swoop camera back to 0 0 for the fresh restart
+        top_cam = max(0.0, (meta["placed_count"] - 2) * SLAB_H)
+        kt_col_s = round(meta["t_collapse_start"] / total_dur, 5)
+        kt_col_e = round(meta["t_collapse_end"] / total_dur, 5)
 
-        key_times.append(f"{kt_settled}")
-        values.append(f"0 {curr_y:.1f}")
+        if kt_col_s > float(key_times[-1]):
+            key_times.append(f"{kt_col_s}")
+            values.append(f"0 {top_cam:.1f}")
+        if kt_col_e > float(key_times[-1]):
+            key_times.append(f"{kt_col_e}")
+            values.append("0 0")
 
-    key_times.append("1")
-    values.append(f"0 {len(steps) * SLAB_H:.1f}")
+    if float(key_times[-1]) < 1.0:
+        key_times.append("1")
+        values.append("0 0")
 
     return (
         f'<animateTransform attributeName="transform" type="translate" '
@@ -368,65 +512,64 @@ def build_camera_animation(steps: list[dict[str, Any]], total_dur: float) -> str
 
 
 def generate_svg() -> str:
-    steps = build_choreography()
-    num_steps = len(steps)
-    total_dur = round(steps[-1]["t_end"], 2)
+    # Seed RNG from environment or current time window so automated runs evolve organically
+    seed_val = int(os.environ.get("STACK_SEED", int(time.time()) // 3600))
+    rng = random.Random(seed_val)
 
-    # Pre-existing base tower (blocks -19 .. 0) mirrors blocks 1 .. 20 in bounds and colors
-    # so that at t = total_dur (shifted down by 20 * SLAB_H), the visible tower matches t = 0 pixel-for-pixel!
-    base_layers_svg: list[str] = []
-    for idx in range(num_steps):
-        z_level = idx - (num_steps - 1)  # -19 .. 0
-        ref_step = steps[idx]
-        bx0, bx1, by0, by1 = ref_step["bounds"]
-        b_colors = ref_step["colors"]
-        base_layers_svg.append(
-            render_prism_faces(bx0, bx1, by0, by1, float(z_level - 1), float(z_level), b_colors)
+    # Simulate 3 distinct, unpredictable AI games back-to-back with different heights & fail points!
+    game_configs = [
+        (rng.randint(8, 10), rng.uniform(0.0, 360.0), 16.0),
+        (rng.randint(5, 7), rng.uniform(0.0, 360.0), 19.0),
+        (rng.randint(11, 14), rng.uniform(0.0, 360.0), 14.5),
+    ]
+
+    t_cursor = 0.0
+    all_games: list[tuple[list[dict[str, Any]], dict[str, Any]]] = []
+    for target_layers, start_hue, hue_step in game_configs:
+        steps, t_cursor, meta = simulate_ai_game(
+            rng=rng,
+            target_layers=target_layers,
+            start_hue=start_hue,
+            hue_step=hue_step,
+            t_offset=t_cursor,
         )
+        all_games.append((steps, meta))
 
-    # Active animated blocks 1 .. 20
-    active_layers_svg: list[str] = []
-    for step in steps:
-        back_slice, main_step = render_step_elements(step, total_dur)
-        if back_slice:
-            # Insert back-side falling slice before recent layers so it falls behind the tower
-            insert_pos = max(0, len(active_layers_svg) - 2)
-            active_layers_svg.insert(insert_pos, back_slice)
-        active_layers_svg.append(main_step)
+    total_dur = round(t_cursor, 2)
+    camera_anim = build_multi_game_camera(all_games, total_dur)
 
-    camera_anim = build_camera_animation(steps, total_dur)
-
-    base_svg_str = "\n      ".join(base_layers_svg)
-    active_svg_str = "\n      ".join(active_layers_svg)
+    games_svg = "\n\n      ".join(
+        render_game_svg(steps, meta, total_dur) for steps, meta in all_games
+    )
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" width="100%" height="100%">
   <defs>
     <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#1E1B4B">
         <animate attributeName="stop-color"
-          values="#1E1B4B;#3B1D5A;#5B2148;#1F3A52;#163A40;#1E1B4B"
+          values="#1E1B4B;#3B1D5A;#1F3A52;#4A1D3F;#163A40;#1E1B4B"
           dur="{total_dur:.2f}s" repeatCount="indefinite" />
       </stop>
       <stop offset="55%" stop-color="#312E81">
         <animate attributeName="stop-color"
-          values="#312E81;#6D286B;#833857;#2B5876;#23575C;#312E81"
+          values="#312E81;#6D286B;#2B5876;#7A2E52;#23575C;#312E81"
           dur="{total_dur:.2f}s" repeatCount="indefinite" />
       </stop>
       <stop offset="100%" stop-color="#4C1D95">
         <animate attributeName="stop-color"
-          values="#4C1D95;#9D4E75;#B56565;#4E798E;#3B7A75;#4C1D95"
+          values="#4C1D95;#9D4E75;#4E798E;#A84A62;#3B7A75;#4C1D95"
           dur="{total_dur:.2f}s" repeatCount="indefinite" />
       </stop>
     </linearGradient>
 
-    <radialGradient id="ambientGlow" cx="50%" cy="42%" r="55%">
+    <radialGradient id="ambientGlow" cx="50%" cy="45%" r="55%">
       <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.14" />
       <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
     </radialGradient>
 
     <linearGradient id="bottomMist" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#0F172A" stop-opacity="0" />
-      <stop offset="100%" stop-color="#090D16" stop-opacity="0.48" />
+      <stop offset="100%" stop-color="#090D16" stop-opacity="0.52" />
     </linearGradient>
 
     <clipPath id="canvasClip">
@@ -435,23 +578,16 @@ def generate_svg() -> str:
   </defs>
 
   <g clip-path="url(#canvasClip)">
-    <!-- Dynamic Smooth Color-Shifting Stack Background -->
     <rect x="0" y="0" width="900" height="560" fill="url(#skyGrad)" />
     <rect x="0" y="0" width="900" height="560" fill="url(#ambientGlow)" />
 
-    <!-- 3D Isometric Stack Tower World -->
     <g id="towerWorld">
       {camera_anim}
 
-      <!-- Sculpted Base Tower Layers (-19 .. 0) -->
-      {base_svg_str}
-
-      <!-- Live Animated Stacking & Slicing Layers (1 .. 20) -->
-      {active_svg_str}
+      {games_svg}
     </g>
 
-    <!-- Subtle Depth Mist at Base of Viewport -->
-    <rect x="0" y="450" width="900" height="110" fill="url(#bottomMist)" />
+    <rect x="0" y="455" width="900" height="105" fill="url(#bottomMist)" />
   </g>
 </svg>
 """
@@ -460,7 +596,7 @@ def generate_svg() -> str:
 def main() -> None:
     svg_content = generate_svg()
     OUTPUT_PATH.write_text(svg_content, encoding="utf-8")
-    print(f"Generated pure 3D Isometric Stack Tower {OUTPUT_PATH}")
+    print(f"Generated AI Stack Tower with fail/collapse/restart at {OUTPUT_PATH}")
 
 
 if __name__ == "__main__":
