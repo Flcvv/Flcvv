@@ -1,16 +1,3 @@
-#!/usr/bin/env python3
-"""
-Unpredictable AI 3D Isometric Stack Tower Game SVG Generator (`profile.svg`).
-
-Simulates an autonomous AI playing multiple games of 3D Isometric Stack:
-- Strict physical support: each block is strictly clipped to the supporting platform
-  below it (never wider than the layer underneath, never floating on thin air).
-- As slices accumulate, the platform gets thinner and thinner until the AI misses.
-- When the AI fails, the missed slab plummets, the entire stacked tower collapses
-  in a cascading 3D physics tumble, and the foundation resets from the beginning
-  for the next unpredictable AI run.
-"""
-
 from __future__ import annotations
 
 import colorsys
@@ -23,16 +10,14 @@ from typing import Any
 
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "profile.svg"
 
-# Isometric projection constants
 ORIGIN_X = 450.0
 ORIGIN_Y = 310.0
-ISO_X = 1.58       # horizontal pixel scale per world unit
-ISO_Y = 0.84       # vertical pixel scale per world unit
-SLAB_H = 20.0      # vertical thickness of each 3D platform slab
+ISO_X = 1.58
+ISO_Y = 0.84
+SLAB_H = 20.0
 
 
 def iso_point(x: float, y: float, z: float) -> tuple[float, float]:
-    """Converts 3D world coordinates (x, y, z) to 2D isometric screen coordinates."""
     sx = ORIGIN_X + (x - y) * ISO_X
     sy = ORIGIN_Y + (x + y) * ISO_Y - z * SLAB_H
     return round(sx, 2), round(sy, 2)
@@ -48,7 +33,6 @@ def hsl_hex(h_deg: float, s: float, l: float) -> str:
 
 
 def slab_colors(hue_deg: float) -> tuple[str, str, str]:
-    """Returns (top_face_hex, left_face_hex, right_face_hex) for a given hue."""
     top = hsl_hex(hue_deg, 0.76, 0.67)
     left = hsl_hex((hue_deg - 5.0) % 360.0, 0.70, 0.55)
     right = hsl_hex((hue_deg + 7.0) % 360.0, 0.66, 0.42)
@@ -64,7 +48,6 @@ def render_prism_faces(
     z1: float,
     colors: tuple[str, str, str],
 ) -> str:
-    """Renders the 3 visible isometric faces (Left-Front, Right-Front, Top) of a 3D box."""
     top_col, left_col, right_col = colors
 
     t_back = iso_point(x0, y0, z1)
@@ -94,15 +77,6 @@ def simulate_ai_game(
     hue_step: float,
     t_offset: float,
 ) -> tuple[list[dict[str, Any]], float, dict[str, Any]]:
-    """
-    Simulates a single AI game of Stack with strict physical support:
-    - Starts on a [-54, 54] x [-54, 54] base platform.
-    - Each layer k slides in with the EXACT size of layer k-1.
-    - Placed block is strictly the intersection with layer k-1 (never wider!).
-    - Overhang is sliced off and falls away.
-    - On the final step, the AI misses the narrow platform completely (0 overlap),
-      triggering a full tower collapse and reset.
-    """
     x0, x1 = -54.0, 54.0
     y0, y1 = -54.0, 54.0
     t_cur = t_offset
@@ -117,15 +91,12 @@ def simulate_ai_game(
         hue = (start_hue + k * hue_step) % 360.0
         colors = slab_colors(hue)
 
-        # Slide speed speeds up slightly as the tower gets higher, plus occasional AI hesitation bounce
         bounces = 1 if (not is_fail_step and rng.random() < 0.22) else 0
         base_dur = max(1.05, 1.48 - k * 0.025 + rng.uniform(-0.08, 0.10))
         dur = round(base_dur + (0.48 if bounces else 0.0), 3)
 
         if is_fail_step:
-            # AI misses the platform completely!
             miss_dir = rng.choice([-1.0, 1.0])
-            # Offset exceeds cur_w so intersection is empty
             delta = round(miss_dir * (cur_w + rng.uniform(6.0, 18.0)), 2)
             t_start = round(t_cur, 3)
             t_drop = round(t_cur + dur * 0.72, 3)
@@ -158,11 +129,9 @@ def simulate_ai_game(
             )
             break
 
-        # Decide whether AI lands a Perfect drop or slices off a piece
         if rng.random() < 0.28:
             delta = 0.0
         else:
-            # Slice off a fraction of the remaining width so it steadily gets thinner
             max_cut = min(cur_w * 0.36, cur_w - 9.5)
             min_cut = min(4.5, max_cut * 0.5)
             if max_cut <= 2.0:
@@ -175,20 +144,16 @@ def simulate_ai_game(
         if delta != 0.0:
             if axis == "x":
                 if delta > 0:
-                    # Shifted toward +x (front-right): supported intersection is [x0 + delta, x1]
                     slice_box = (x1, x1 + delta, y0, y1, "front")
                     x0 = round(x0 + delta, 2)
                 else:
-                    # Shifted toward -x (back-left): supported intersection is [x0, x1 + delta]
                     slice_box = (x0 + delta, x0, y0, y1, "back")
                     x1 = round(x1 + delta, 2)
             else:
                 if delta > 0:
-                    # Shifted toward +y (front-left): supported intersection is [y0 + delta, y1]
                     slice_box = (x0, x1, y1, y1 + delta, "front")
                     y0 = round(y0 + delta, 2)
                 else:
-                    # Shifted toward -y (back-right): supported intersection is [y0, y1 + delta]
                     slice_box = (x0, x1, y0 + delta, y0, "back")
                     y1 = round(y1 + delta, 2)
 
@@ -197,7 +162,6 @@ def simulate_ai_game(
         t_end = round(t_cur + dur, 3)
         t_cur = t_end
 
-        # Assign a random 3D collapse vector for when the tower eventually collapses
         angle_dir = 1.0 if (k % 2 == 0) else -1.0
         collapse_dx = round(angle_dir * rng.uniform(25.0, 95.0) + rng.uniform(-15.0, 15.0), 1)
         collapse_dy = round(rng.uniform(220.0, 340.0), 1)
@@ -222,7 +186,6 @@ def simulate_ai_game(
             }
         )
 
-    # Collapse & Reset window after the fail drop
     t_fail_drop = steps[-1]["t_drop"]
     t_collapse_start = round(t_fail_drop + 0.18, 3)
     t_collapse_end = round(t_collapse_start + 0.95, 3)
@@ -249,7 +212,6 @@ def render_perfect_ring(
     t_drop: float,
     total_dur: float,
 ) -> str:
-    """Renders the expanding white isometric glow ring on a Perfect drop."""
     pad_start = 1.5
     pad_end = 13.0
 
@@ -285,10 +247,6 @@ def render_game_svg(
     meta: dict[str, Any],
     total_dur: float,
 ) -> str:
-    """
-    Renders a single AI game (pedestal + sliding blocks + sliced overhangs +
-    collapsing tower on failure).
-    """
     t_game_start = meta["t_game_start"]
     t_collapse_start = meta["t_collapse_start"]
     t_collapse_end = meta["t_collapse_end"]
@@ -299,10 +257,7 @@ def render_game_svg(
     kg_pre = max(0.0, round(kg_start - 0.001, 5))
     kc_start = round(t_collapse_start / total_dur, 5)
     kc_end = round(t_collapse_end / total_dur, 5)
-    kr_done = round(min(1.0, t_reset_done / total_dur), 5)
 
-    # 1. Foundation Pedestal (z = -12 .. 0, bounds [-54, 54] x [-54, 54])
-    # Collapses downward when the tower collapses, and rises back up for the next game
     pedestal_layers: list[str] = []
     for z_idx in range(-11, 1):
         p_hue = (meta["start_hue"] + z_idx * 10.0) % 360.0
@@ -311,7 +266,6 @@ def render_game_svg(
         )
     pedestal_inner = "\n        ".join(pedestal_layers)
 
-    # Pedestal visibility & collapse motion during this game's window
     pedestal_svg = (
         f'<g opacity="0">'
         f"\n        {pedestal_inner}\n      "
@@ -341,7 +295,6 @@ def render_game_svg(
         ks_pre = max(0.0, round(ks - 0.001, 5))
         kd_post = min(1.0, round(kd + 0.001, 5))
 
-        # Sliding incoming block (always has exact dimensions of prev_bounds!)
         slide_dist = 148.0
         if axis == "x":
             start_dx, start_dy = iso_point(-slide_dist, 0, 0)[0] - ORIGIN_X, iso_point(-slide_dist, 0, 0)[1] - ORIGIN_Y
@@ -378,7 +331,6 @@ def render_game_svg(
             f"</g>"
         )
 
-        # Falling sliced piece (or missed whole block on fail step!)
         extra_back = ""
         extra_front = ""
         if step["slice_box"] is not None:
@@ -406,19 +358,15 @@ def render_game_svg(
                 extra_front = slice_anim
 
         if step["failed"]:
-            # No placed block on the fail step — the whole slab missed!
             if extra_back:
                 insert_pos = max(0, len(layers_svg) - 2)
                 layers_svg.insert(insert_pos, extra_back)
             layers_svg.append(f"{sliding_svg}\n      {extra_front}")
             continue
 
-        # Placed supported block: stays on tower from t_drop until t_collapse_start,
-        # then cascades & collapses downward with staggered 3D physics!
         bx0, bx1, by0, by1 = step["bounds"]
         placed_prism = render_prism_faces(bx0, bx1, by0, by1, z0, z1, colors)
 
-        # Stagger top blocks to buckle first during collapse
         stagger = max(0.0, (placed_count - k) * 0.032)
         t_blk_col_start = min(t_collapse_end - 0.25, t_collapse_start + stagger)
         t_blk_col_mid = min(t_collapse_end - 0.10, t_blk_col_start + 0.22)
@@ -458,10 +406,6 @@ def build_multi_game_camera(
     all_games: list[tuple[list[dict[str, Any]], dict[str, Any]]],
     total_dur: float,
 ) -> str:
-    """
-    Tracks the rising tower during each game and swoops back down to 0
-    when the tower collapses and restarts from the beginning.
-    """
     key_times: list[str] = ["0"]
     values: list[str] = ["0 0"]
 
@@ -470,7 +414,6 @@ def build_multi_game_camera(
             if step["failed"]:
                 continue
             k = step["k"]
-            # Camera begins panning after layer 3 so the tower stays centered
             cam_prev = max(0.0, (k - 3) * SLAB_H)
             cam_curr = max(0.0, (k - 2) * SLAB_H)
             if cam_curr == cam_prev:
@@ -488,7 +431,6 @@ def build_multi_game_camera(
                 key_times.append(f"{kt_s}")
                 values.append(f"0 {cam_curr:.1f}")
 
-        # During tower collapse, swoop camera back to 0 0 for the fresh restart
         top_cam = max(0.0, (meta["placed_count"] - 2) * SLAB_H)
         kt_col_s = round(meta["t_collapse_start"] / total_dur, 5)
         kt_col_e = round(meta["t_collapse_end"] / total_dur, 5)
@@ -512,11 +454,9 @@ def build_multi_game_camera(
 
 
 def generate_svg() -> str:
-    # Seed RNG from environment or current time window so automated runs evolve organically
     seed_val = int(os.environ.get("STACK_SEED", int(time.time()) // 3600))
     rng = random.Random(seed_val)
 
-    # Simulate 3 distinct, unpredictable AI games back-to-back with different heights & fail points!
     game_configs = [
         (rng.randint(8, 10), rng.uniform(0.0, 360.0), 16.0),
         (rng.randint(5, 7), rng.uniform(0.0, 360.0), 19.0),
@@ -596,7 +536,6 @@ def generate_svg() -> str:
 def main() -> None:
     svg_content = generate_svg()
     OUTPUT_PATH.write_text(svg_content, encoding="utf-8")
-    print(f"Generated AI Stack Tower with fail/collapse/restart at {OUTPUT_PATH}")
 
 
 if __name__ == "__main__":
