@@ -248,13 +248,9 @@
     <text x="340" y="296" class="mono-xs" fill="#64748B">LANGUAGE TELEMETRY // CODE DISTRIBUTION</text>
 
     <g clip-path="url(#langBarClip)">
-      <rect x="340.00" y="302" width="257.40" height="10" fill="#3572A5" />
-        <rect x="597.40" y="302" width="140.40" height="10" fill="#00F5D4" />
-        <rect x="737.80" y="302" width="70.20" height="10" fill="#89E051" />
+      <rect x="340.00" y="302" width="468.00" height="10" fill="#3572A5" />
     </g>
-    <g transform="translate(340, 332)"><circle cx="6" cy="-4" r="4.5" fill="#3572A5" /><text x="16" y="0" class="mono-sm" fill="#E2E8F0">Python</text><text x="215" y="0" text-anchor="end" class="mono-sm" fill="#94A3B8">55.0%</text></g>
-      <g transform="translate(578, 332)"><circle cx="6" cy="-4" r="4.5" fill="#00F5D4" /><text x="16" y="0" class="mono-sm" fill="#E2E8F0">SVG / Automation</text><text x="215" y="0" text-anchor="end" class="mono-sm" fill="#94A3B8">30.0%</text></g>
-      <g transform="translate(340, 354)"><circle cx="6" cy="-4" r="4.5" fill="#89E051" /><text x="16" y="0" class="mono-sm" fill="#E2E8F0">Shell</text><text x="215" y="0" text-anchor="end" class="mono-sm" fill="#94A3B8">15.0%</text></g>
+    <g transform="translate(340, 332)"><circle cx="6" cy="-4" r="4.5" fill="#3572A5" /><text x="16" y="0" class="mono-sm" fill="#E2E8F0">Python</text><text x="215" y="0" text-anchor="end" class="mono-sm" fill="#94A3B8">100.0%</text></g>
 
     <!-- Terminal Verification Console -->
     <rect x="328" y="376" width="494" height="44" rx="10" fill="#050811" stroke="#1E293B" stroke-width="1.2" />
@@ -270,7 +266,7 @@
     <!-- Footer Bar: Auto-Sync Timestamp & Scannable Barcode -->
     <line x1="34" y1="432" x2="822" y2="432" stroke="#1E293B" stroke-width="1" />
     <text x="36" y="452" class="mono-xs" fill="#64748B">AUTO-GENERATED VIA GITHUB ACTIONS // SVG PROFILE ID ENGINE</text>
-    <text x="36" y="467" class="mono-xs" fill="#475569">LAST SYNC: 2026-10-24 01:44 UTC • HTTPS://GITHUB.COM/FLCVV</text>
+    <text x="36" y="467" class="mono-xs" fill="#475569">LAST SYNC: 2026-10-24 01:46 UTC • HTTPS://GITHUB.COM/FLCVV</text>
 
     <!-- Deterministic Barcode -->
     <rect x="575" y="438" width="2" height="24" rx="0.5" fill="#00F5D4" fill-opacity="0.45" />
