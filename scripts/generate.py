@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Automatic GitHub Profile ID SVG Generator for @Flcvv.
+Automatic Cottagecore GitHub Profile ID SVG Generator for @Flcvv.
 
-Fetches live profile & repository metrics from the GitHub REST API (zero external
-dependencies) and renders an animated Cyber-Glass Developer ID Card (`profile-id.svg`).
+Fetches live profile & repository metrics from the GitHub REST API and renders
+a warm, botanical Cottagecore Atelier & Library Identity Card (`profile.svg`).
 """
 
 from __future__ import annotations
@@ -13,7 +13,6 @@ import datetime as dt
 import html
 import json
 import os
-import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -22,34 +21,34 @@ from typing import Any
 DEFAULT_USERNAME = "Flcvv"
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "profile.svg"
 
-# Optional overrides via environment variables or defaults when GitHub profile fields are blank
-DEFAULT_ROLE = os.environ.get("PROFILE_ROLE", "Software Engineer & Open Source Builder")
+DEFAULT_ROLE = os.environ.get("PROFILE_ROLE", "Software Artisan & Woodland Tinkerer")
 DEFAULT_BIO = os.environ.get(
     "PROFILE_BIO",
-    "Building clean systems, creative code, and automated workflows on GitHub.",
+    "Tending digital gardens, crafting cozy code, and brewing quiet automations by the hearth.",
 )
-DEFAULT_LOCATION = os.environ.get("PROFILE_LOCATION", "Earth // Cloud Native")
+DEFAULT_LOCATION = os.environ.get("PROFILE_LOCATION", "Sunlit Meadow • Cloud Cottage")
 
+# Warm Cottagecore & Botanical language palette
 LANGUAGE_COLORS: dict[str, str] = {
-    "Python": "#3572A5",
-    "TypeScript": "#3178C6",
-    "JavaScript": "#F1E05A",
-    "Rust": "#DEA584",
-    "Go": "#00ADD8",
-    "C++": "#F34B7D",
-    "C": "#555555",
-    "Java": "#B07219",
-    "HTML": "#E34C26",
-    "CSS": "#563D7C",
-    "Shell": "#89E051",
-    "SVG / Automation": "#00F5D4",
+    "Python": "#5E8C6A",          # Sage Moss
+    "TypeScript": "#6A8D9B",      # Misty Lake Blue
+    "JavaScript": "#D9A441",      # Wildflower Honey
+    "Rust": "#C47457",            # Terracotta Clay
+    "Go": "#7BA098",              # Lichen Teal
+    "C++": "#B86B77",             # Pressed Rose
+    "C": "#7D7068",               # River Stone
+    "Java": "#B07C4F",            # Cinnamon Bark
+    "HTML": "#CE7955",            # Autumn Persimmon
+    "CSS": "#8E7394",             # Dried Lavender
+    "Shell": "#7E9960",           # Fern Leaf
+    "Botanical SVG": "#D49B54",   # Golden Chamomile
 }
 
 
 def github_get(url: str, token: str | None = None) -> Any:
     headers = {
         "Accept": "application/vnd.github+json",
-        "User-Agent": "Flcvv-Profile-ID-Generator/1.0",
+        "User-Agent": "Flcvv-Cottage-Profile-Generator/1.0",
     }
     if token:
         headers["Authorization"] = f"Bearer {token}"
@@ -68,7 +67,7 @@ def fetch_avatar_data_uri(avatar_url: str) -> str:
         sized_url = f"{avatar_url}{sep}s=240"
         req = urllib.request.Request(
             sized_url,
-            headers={"User-Agent": "Flcvv-Profile-ID-Generator/1.0"},
+            headers={"User-Agent": "Flcvv-Cottage-Profile-Generator/1.0"},
         )
         with urllib.request.urlopen(req, timeout=15) as resp:
             content_type = resp.headers.get("Content-Type", "image/png").split(";")[0]
@@ -87,17 +86,17 @@ def compute_account_age(created_at_iso: str) -> tuple[str, str]:
 
     now = dt.datetime.now(dt.timezone.utc)
     days = max(0, (now - created).days)
-    issued_str = created.strftime("%Y.%m.%d")
+    issued_str = created.strftime("%b %d, %Y")
     if days < 1:
-        age_str = "DAY 01 // GENESIS"
+        age_str = "First Sprout • Day 1"
     elif days < 30:
-        age_str = f"{days}D UPTIME"
+        age_str = f"{days} Sunrises"
     elif days < 365:
         months = max(1, days // 30)
-        age_str = f"{months}MO ({days}D) UPTIME"
+        age_str = f"{months} Mo ({days} Days)"
     else:
         years = days / 365.25
-        age_str = f"{years:.1f}Y ({days}D) UPTIME"
+        age_str = f"{years:.1f} Seasons ({days}d)"
     return issued_str, age_str
 
 
@@ -110,24 +109,20 @@ def collect_profile_data(username: str, token: str | None) -> dict[str, Any]:
 
     total_stars = 0
     total_forks = 0
-    total_size_kb = 0
     lang_counts: dict[str, int] = {}
 
     if isinstance(repos, list):
         for repo in repos:
             total_stars += int(repo.get("stargazers_count", 0))
             total_forks += int(repo.get("forks_count", 0))
-            total_size_kb += int(repo.get("size", 0))
             lang = repo.get("language")
             if lang:
                 lang_counts[lang] = lang_counts.get(lang, 0) + max(1, int(repo.get("size", 1)))
 
-    # If the account is freshly created and has no detected language bytes yet,
-    # seed with the stack powering this repo so the telemetry bar looks great immediately.
     if not lang_counts:
         lang_counts = {
             "Python": 55,
-            "SVG / Automation": 30,
+            "Botanical SVG": 30,
             "Shell": 15,
         }
 
@@ -137,12 +132,11 @@ def collect_profile_data(username: str, token: str | None) -> dict[str, Any]:
         {
             "name": name,
             "percent": round(weight * 100.0 / total_lang_weight, 1),
-            "color": LANGUAGE_COLORS.get(name, "#7C3AED"),
+            "color": LANGUAGE_COLORS.get(name, "#8E7394"),
         }
         for name, weight in top_langs
     ]
 
-    # Normalize percentages to sum to 100% for the bar width
     if languages:
         diff = round(100.0 - sum(item["percent"] for item in languages), 1)
         languages[0]["percent"] = round(languages[0]["percent"] + diff, 1)
@@ -159,17 +153,15 @@ def collect_profile_data(username: str, token: str | None) -> dict[str, Any]:
         "bio": user.get("bio") or DEFAULT_BIO,
         "location": user.get("location") or DEFAULT_LOCATION,
         "public_repos": int(user.get("public_repos") or 0),
-        "public_gists": int(user.get("public_gists") or 0),
         "followers": int(user.get("followers") or 0),
         "following": int(user.get("following") or 0),
         "total_stars": total_stars,
         "total_forks": total_forks,
-        "total_size_kb": total_size_kb,
         "issued_date": issued_date,
         "uptime_str": uptime_str,
         "avatar_uri": avatar_uri,
         "languages": languages,
-        "synced_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        "synced_at": dt.datetime.now(dt.timezone.utc).strftime("%b %d, %Y • %H:%M UTC"),
     }
 
 
@@ -199,19 +191,20 @@ def wrap_text(text: str, max_chars: int = 54, max_lines: int = 2) -> list[str]:
     return lines[:max_lines]
 
 
-def build_barcode_svg(seed_text: str, start_x: int, start_y: int, height: int = 28) -> str:
+def build_library_barcode(seed_text: str, start_x: int, start_y: int, height: int = 22) -> str:
     bars: list[str] = []
     x = start_x
     seed_bytes = seed_text.encode("utf-8")
-    for idx in range(42):
+    palette = ["#5E8C6A", "#8C5E45", "#A68A71", "#C47457"]
+    for idx in range(38):
         b = seed_bytes[idx % len(seed_bytes)]
-        width = 1 + ((b + idx * 7) % 3)
+        width = 1 + ((b + idx * 5) % 3)
         gap = 2 + ((b >> 2) % 2)
-        opacity = 0.45 + (((b ^ idx) % 5) * 0.12)
-        color = "#00F5D4" if idx % 7 == 0 else "#94A3B8"
+        opacity = 0.45 + (((b ^ idx) % 5) * 0.1)
+        color = palette[idx % len(palette)]
         bars.append(
             f'<rect x="{x}" y="{start_y}" width="{width}" height="{height}" '
-            f'rx="0.5" fill="{color}" fill-opacity="{opacity:.2f}" />'
+            f'rx="0.8" fill="{color}" fill-opacity="{opacity:.2f}" />'
         )
         x += width + gap
     return "\n      ".join(bars)
@@ -232,112 +225,108 @@ def render_svg(data: dict[str, Any]) -> str:
     while len(bio_lines) < 2:
         bio_lines.append("")
 
-    # Language spectrum bar segments
-    bar_x = 340.0
-    bar_total_w = 468.0
+    # Botanical language bar
+    bar_x = 344.0
+    bar_total_w = 456.0
     lang_rects: list[str] = []
     lang_legends: list[str] = []
 
     for idx, lang in enumerate(data["languages"]):
         seg_w = max(8.0, round((lang["percent"] / 100.0) * bar_total_w, 2))
         if idx == len(data["languages"]) - 1:
-            seg_w = max(8.0, round(340.0 + bar_total_w - bar_x, 2))
+            seg_w = max(8.0, round(344.0 + bar_total_w - bar_x, 2))
         lang_rects.append(
-            f'<rect x="{bar_x:.2f}" y="302" width="{seg_w:.2f}" height="10" '
+            f'<rect x="{bar_x:.2f}" y="305" width="{seg_w:.2f}" height="11" '
             f'fill="{lang["color"]}" />'
         )
         bar_x += seg_w
 
         col = idx % 2
         row = idx // 2
-        lx = 340 + col * 238
-        ly = 332 + row * 22
+        lx = 344 + col * 232
+        ly = 336 + row * 22
         lname = html.escape(lang["name"])
         lcolor = lang["color"]
         lpct = lang["percent"]
         lang_legends.append(
             f'<g transform="translate({lx}, {ly})">'
-            f'<circle cx="6" cy="-4" r="4.5" fill="{lcolor}" />'
-            f'<text x="16" y="0" class="mono-sm" fill="#E2E8F0">{lname}</text>'
-            f'<text x="215" y="0" text-anchor="end" class="mono-sm" fill="#94A3B8">{lpct:.1f}%</text>'
+            f'<path d="M2 -4 C2 -8, 8 -8, 10 -4 C8 0, 2 0, 2 -4 Z" fill="{lcolor}" />'
+            f'<text x="16" y="0" class="typewriter-sm" fill="#4A3B32">{lname}</text>'
+            f'<text x="210" y="0" text-anchor="end" class="typewriter-sm" fill="#847062">{lpct:.1f}%</text>'
             f"</g>"
         )
 
     lang_rects_svg = "\n        ".join(lang_rects)
     lang_legends_svg = "\n      ".join(lang_legends)
-    barcode_svg = build_barcode_svg(f"{login}-{user_id}-{node_id}", start_x=575, start_y=438, height=24)
+    barcode_svg = build_library_barcode(f"{login}-{user_id}-{node_id}", start_x=580, start_y=436, height=22)
 
     avatar_uri = data.get("avatar_uri", "")
     if avatar_uri:
         avatar_element = (
-            f'<image x="72" y="108" width="144" height="144" '
+            f'<image x="82" y="114" width="136" height="136" '
             f'href="{avatar_uri}" clip-path="url(#avatarClip)" preserveAspectRatio="xMidYMid slice" />'
         )
     else:
         initials = html.escape(login[:2].upper())
         avatar_element = (
-            f'<rect x="72" y="108" width="144" height="144" fill="url(#avatarFallbackGrad)" clip-path="url(#avatarClip)" />'
-            f'<text x="144" y="195" text-anchor="middle" class="title-lg" fill="#FFFFFF">{initials}</text>'
+            f'<rect x="82" y="114" width="136" height="136" fill="#E6DEC8" clip-path="url(#avatarClip)" />'
+            f'<text x="150" y="196" text-anchor="middle" class="serif-initials" fill="#5E8C6A">{initials}</text>'
         )
 
-    repos_val = f"{data['public_repos']:02d}"
-    stars_val = f"{data['total_stars']:02d}"
-    followers_val = f"{data['followers']:02d}"
-    forks_val = f"{data['total_forks']:02d}"
+    repos_val = f"{data['public_repos']}"
+    stars_val = f"{data['total_stars']}"
+    followers_val = f"{data['followers']}"
+    forks_val = f"{data['total_forks']}"
 
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 500" width="100%" height="100%" role="img" aria-label="{login} GitHub Developer ID Card">
-  <title>{login} — GitHub Developer Identity Card (#{user_id})</title>
-  <desc>Automated SVG Developer Profile ID for @{login}, featuring live GitHub metrics, language telemetry, and verification metadata.</desc>
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 500" width="100%" height="100%" role="img" aria-label="{login} Cottagecore Guild Identity Card">
+  <title>{login} — Woodland Atelier &amp; Guild Identity Card (#{user_id})</title>
+  <desc>Aesthetic cottagecore botanical profile card for @{login}, automatically tended via GitHub Actions.</desc>
 
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#070913" />
-      <stop offset="45%" stop-color="#0D1326" />
-      <stop offset="100%" stop-color="#080B16" />
+    <!-- Warm Linen & Pressed Parchment Gradients -->
+    <linearGradient id="parchmentBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCF8F0" />
+      <stop offset="50%" stop-color="#F6EFE2" />
+      <stop offset="100%" stop-color="#EFE5D4" />
     </linearGradient>
 
-    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00F5D4" stop-opacity="0.85" />
-      <stop offset="50%" stop-color="#7C3AED" stop-opacity="0.65" />
-      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.85" />
+    <linearGradient id="cardstockPanel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFDF9" stop-opacity="0.88" />
+      <stop offset="100%" stop-color="#F7F0E4" stop-opacity="0.88" />
     </linearGradient>
 
-    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#00F5D4" />
-      <stop offset="55%" stop-color="#3B82F6" />
-      <stop offset="100%" stop-color="#A855F7" />
+    <linearGradient id="sageHeader" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4A6B53" />
+      <stop offset="50%" stop-color="#5E8066" />
+      <stop offset="100%" stop-color="#4F6F58" />
     </linearGradient>
 
-    <linearGradient id="chipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FDE68A" />
-      <stop offset="50%" stop-color="#F59E0B" />
-      <stop offset="100%" stop-color="#B45309" />
+    <linearGradient id="waxSealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D47A63" />
+      <stop offset="55%" stop-color="#B85A43" />
+      <stop offset="100%" stop-color="#8F3F2B" />
     </linearGradient>
 
-    <linearGradient id="scanBeam" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#00F5D4" stop-opacity="0" />
-      <stop offset="50%" stop-color="#00F5D4" stop-opacity="0.09" />
-      <stop offset="100%" stop-color="#00F5D4" stop-opacity="0" />
+    <linearGradient id="washiTape" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A8C2A5" stop-opacity="0.72" />
+      <stop offset="50%" stop-color="#BBD1B8" stop-opacity="0.82" />
+      <stop offset="100%" stop-color="#A2BCA0" stop-opacity="0.72" />
     </linearGradient>
 
-    <linearGradient id="avatarFallbackGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1E293B" />
-      <stop offset="100%" stop-color="#334155" />
-    </linearGradient>
-
-    <radialGradient id="glowCyan" cx="18%" cy="32%" r="45%">
-      <stop offset="0%" stop-color="#00F5D4" stop-opacity="0.16" />
-      <stop offset="100%" stop-color="#00F5D4" stop-opacity="0" />
+    <radialGradient id="sunlightGlow" cx="15%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#FCE8B2" stop-opacity="0.38" />
+      <stop offset="100%" stop-color="#FCE8B2" stop-opacity="0" />
     </radialGradient>
 
-    <radialGradient id="glowViolet" cx="85%" cy="75%" r="50%">
-      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.18" />
-      <stop offset="100%" stop-color="#7C3AED" stop-opacity="0" />
+    <radialGradient id="meadowGlow" cx="88%" cy="82%" r="45%">
+      <stop offset="0%" stop-color="#C5DAC1" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#C5DAC1" stop-opacity="0" />
     </radialGradient>
 
-    <pattern id="cyberGrid" width="28" height="28" patternUnits="userSpaceOnUse">
-      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#1E293B" stroke-width="0.7" stroke-opacity="0.55" />
-      <circle cx="28" cy="28" r="0.9" fill="#334155" fill-opacity="0.6" />
+    <!-- Subtle Linen & Botanical Dot Grid Pattern -->
+    <pattern id="linenGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="12" r="0.8" fill="#C7B8A3" fill-opacity="0.45" />
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#E5DAC8" stroke-width="0.5" stroke-opacity="0.55" />
     </pattern>
 
     <clipPath id="cardClip">
@@ -345,228 +334,277 @@ def render_svg(data: dict[str, Any]) -> str:
     </clipPath>
 
     <clipPath id="avatarClip">
-      <rect x="72" y="108" width="144" height="144" rx="26" />
+      <rect x="82" y="114" width="136" height="136" rx="68" />
     </clipPath>
 
     <clipPath id="langBarClip">
-      <rect x="340" y="302" width="468" height="10" rx="5" />
+      <rect x="344" y="305" width="456" height="11" rx="5.5" />
     </clipPath>
 
     <style>
-      .sans-title {{
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
-        font-weight: 800;
-        font-size: 26px;
-        letter-spacing: -0.4px;
-      }}
-      .sans-role {{
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
-        font-weight: 600;
-        font-size: 13px;
+      .serif-title {{
+        font-family: Georgia, "Playfair Display", "Palatino Linotype", "Book Antiqua", serif;
+        font-weight: 700;
+        font-size: 25px;
         letter-spacing: 0.2px;
       }}
-      .sans-bio {{
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+      .serif-italic {{
+        font-family: Georgia, "Playfair Display", "Palatino Linotype", serif;
+        font-style: italic;
         font-weight: 400;
+        font-size: 13.5px;
+      }}
+      .serif-role {{
+        font-family: Georgia, "Playfair Display", "Palatino Linotype", serif;
+        font-weight: 700;
+        font-size: 14.5px;
+      }}
+      .serif-bio {{
+        font-family: Georgia, "Palatino Linotype", "Book Antiqua", serif;
         font-size: 12.5px;
       }}
-      .mono-xs {{
-        font-family: "JetBrains Mono", "Fira Code", "SFMono-Regular", Consolas, monospace;
+      .serif-stat {{
+        font-family: Georgia, "Playfair Display", serif;
+        font-weight: 700;
+        font-size: 23px;
+      }}
+      .serif-initials {{
+        font-family: Georgia, serif;
+        font-weight: 700;
+        font-size: 42px;
+      }}
+      .typewriter-xs {{
+        font-family: "Courier Prime", "Courier New", Courier, monospace;
         font-size: 10px;
-        letter-spacing: 1.2px;
+        letter-spacing: 1.1px;
+        font-weight: 700;
+      }}
+      .typewriter-sm {{
+        font-family: "Courier Prime", "Courier New", Courier, monospace;
+        font-size: 11.5px;
         font-weight: 600;
       }}
-      .mono-sm {{
-        font-family: "JetBrains Mono", "Fira Code", "SFMono-Regular", Consolas, monospace;
-        font-size: 11.5px;
-        font-weight: 500;
+      @keyframes swayBreeze {{
+        0%, 100% {{ transform: rotate(0deg); }}
+        50% {{ transform: rotate(2.5deg); }}
       }}
-      .mono-stat {{
-        font-family: "JetBrains Mono", "Fira Code", "SFMono-Regular", Consolas, monospace;
-        font-size: 22px;
-        font-weight: 800;
+      @keyframes fireflyGlow {{
+        0%, 100% {{ opacity: 0.25; transform: translateY(0px) scale(0.9); }}
+        50% {{ opacity: 0.9; transform: translateY(-3px) scale(1.15); }}
       }}
-      .title-lg {{
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-size: 44px;
-        font-weight: 800;
+      @keyframes gentlePulse {{
+        0%, 100% {{ opacity: 0.95; }}
+        50% {{ opacity: 0.45; }}
       }}
-      @keyframes pulseDot {{
-        0%, 100% {{ opacity: 1; transform: scale(1); }}
-        50% {{ opacity: 0.35; transform: scale(0.88); }}
-      }}
-      @keyframes blinkCursor {{
-        0%, 49% {{ opacity: 1; }}
-        50%, 100% {{ opacity: 0; }}
-      }}
-      @keyframes orbitSpin {{
-        from {{ stroke-dashoffset: 0; }}
-        to {{ stroke-dashoffset: -120; }}
-      }}
-      @keyframes scanSweep {{
-        0% {{ transform: translateY(-480px); }}
-        100% {{ transform: translateY(520px); }}
-      }}
-      .pulse-dot {{
-        animation: pulseDot 2.4s ease-in-out infinite;
+      .botanical-sway {{
+        animation: swayBreeze 6s ease-in-out infinite;
         transform-origin: center;
         transform-box: fill-box;
       }}
-      .cursor-blink {{
-        animation: blinkCursor 1.1s step-end infinite;
+      .firefly-1 {{
+        animation: fireflyGlow 4.2s ease-in-out infinite;
       }}
-      .hud-ring {{
-        stroke-dasharray: 18 12;
-        animation: orbitSpin 8s linear infinite;
+      .firefly-2 {{
+        animation: fireflyGlow 5.5s ease-in-out 1.4s infinite;
       }}
-      .scan-bar {{
-        animation: scanSweep 9s linear infinite;
+      .hearth-pulse {{
+        animation: gentlePulse 3s ease-in-out infinite;
       }}
     </style>
   </defs>
 
-  <!-- Card Base & Ambient Lighting -->
+  <!-- Main Pressed Parchment Card -->
   <g clip-path="url(#cardClip)">
-    <rect x="12" y="12" width="836" height="476" rx="22" fill="url(#bgGrad)" />
-    <rect x="12" y="12" width="836" height="476" fill="url(#cyberGrid)" />
-    <rect x="12" y="12" width="836" height="476" fill="url(#glowCyan)" />
-    <rect x="12" y="12" width="836" height="476" fill="url(#glowViolet)" />
+    <rect x="12" y="12" width="836" height="476" rx="22" fill="url(#parchmentBg)" />
+    <rect x="12" y="12" width="836" height="476" fill="url(#linenGrid)" />
+    <rect x="12" y="12" width="836" height="476" fill="url(#sunlightGlow)" />
+    <rect x="12" y="12" width="836" height="476" fill="url(#meadowGlow)" />
 
-    <!-- Subtle Vertical Holographic Scanline -->
-    <rect x="12" y="12" width="836" height="90" fill="url(#scanBeam)" class="scan-bar" />
+    <!-- Inner Vintage Stitched Border -->
+    <rect x="20" y="20" width="820" height="460" rx="16" fill="none" stroke="#C7B69E" stroke-width="1.2" stroke-dasharray="5 4" />
 
-    <!-- Top Identity Header Bar -->
-    <rect x="12" y="12" width="836" height="58" fill="#0B1120" fill-opacity="0.82" />
-    <line x1="12" y1="70" x2="848" y2="70" stroke="#1E293B" stroke-width="1.5" />
-    <rect x="12" y="69" width="290" height="2" fill="url(#accentGrad)" />
+    <!-- Top Sage Botanical Header Banner -->
+    <rect x="12" y="12" width="836" height="60" fill="url(#sageHeader)" />
+    <line x1="12" y1="72" x2="848" y2="72" stroke="#D49B54" stroke-width="2" />
+    <line x1="12" y1="75" x2="848" y2="75" stroke="#8C6D46" stroke-width="0.7" stroke-dasharray="3 3" />
 
-    <!-- Header Left: GitHub Emblem + Credential Type -->
-    <g transform="translate(36, 30)">
-      <path fill="#00F5D4" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-      <text x="36" y="11" class="mono-xs" fill="#00F5D4">GITHUB DEVELOPER CREDENTIAL // VERIFIED ID</text>
-      <text x="36" y="24" class="mono-xs" fill="#64748B">SERIAL #{user_id} • NODE {node_id}</text>
+    <!-- Header Left: Botanical Leaf Emblem + Guild Title -->
+    <g transform="translate(36, 26)">
+      <!-- Hand-drawn Oak/Sage Sprig Icon -->
+      <path d="M4 26 C8 16, 16 8, 26 4 C22 14, 15 22, 4 26 Z" fill="#E9DFC9" />
+      <path d="M4 26 C12 24, 20 16, 26 4" fill="none" stroke="#4A6B53" stroke-width="1.3" />
+      <circle cx="24" cy="6" r="2.2" fill="#F3C978" />
+      <circle cx="9" cy="14" r="1.8" fill="#F3C978" />
+      <text x="38" y="13" class="typewriter-xs" fill="#FAF5EB">WOODLAND ATELIER &amp; CODING GUILD // REGISTRY CARD</text>
+      <text x="38" y="27" class="serif-italic" fill="#DFD5C0">Folio No. {user_id} • Herbarium Node {node_id}</text>
     </g>
 
-    <!-- Header Right: Live Status Pill -->
-    <g transform="translate(664, 27)">
-      <rect x="0" y="0" width="154" height="28" rx="14" fill="#0F172A" stroke="#1E293B" stroke-width="1.2" />
-      <circle cx="18" cy="14" r="4.5" fill="#10B981" class="pulse-dot" />
-      <text x="31" y="18" class="mono-xs" fill="#A7F3D0">STATUS: ACTIVE</text>
+    <!-- Header Right: Cozy Hearth Status Pill -->
+    <g transform="translate(642, 28)">
+      <rect x="0" y="0" width="176" height="28" rx="14" fill="#3A5441" stroke="#8FA98F" stroke-width="1.2" />
+      <circle cx="18" cy="14" r="4.5" fill="#F3C978" class="hearth-pulse" />
+      <text x="30" y="18" class="typewriter-xs" fill="#FAF5EB">AT THE HEARTH • COZY</text>
     </g>
 
-    <!-- LEFT IDENTITY COLUMN (Badge Photo + Chip + Core Metadata) -->
-    <rect x="34" y="90" width="276" height="330" rx="16" fill="#0F172A" fill-opacity="0.72" stroke="#1E293B" stroke-width="1.2" />
+    <!-- Decorative Background Botanical Vines (Top-Right & Bottom-Left) -->
+    <g class="botanical-sway" opacity="0.28" transform="translate(770, 78)">
+      <path d="M40 0 Q20 35 0 65" fill="none" stroke="#5E8C6A" stroke-width="1.8" />
+      <path d="M28 18 C15 12, 8 20, 22 26 Z" fill="#5E8C6A" />
+      <path d="M18 36 C32 32, 36 42, 20 44 Z" fill="#5E8C6A" />
+      <path d="M8 52 C-4 46, -6 56, 6 60 Z" fill="#5E8C6A" />
+      <circle cx="0" cy="65" r="4" fill="#D49B54" />
+    </g>
 
-    <!-- Animated HUD Frame Around Avatar -->
-    <rect x="66" y="102" width="156" height="156" rx="30" fill="none" stroke="url(#accentGrad)" stroke-width="1.8" class="hud-ring" />
-    <rect x="70" y="106" width="148" height="148" rx="27" fill="none" stroke="#334155" stroke-width="1" />
+    <!-- Floating Golden Pollen / Fireflies -->
+    <circle cx="318" cy="112" r="2.5" fill="#D9A441" class="firefly-1" />
+    <circle cx="808" cy="272" r="2.2" fill="#D9A441" class="firefly-2" />
+    <circle cx="52" cy="410" r="2.4" fill="#D9A441" class="firefly-1" />
+
+    <!-- LEFT COLUMN: Pressed Botanical Portrait & Library Metadata -->
+    <rect x="36" y="92" width="268" height="330" rx="14" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.4" />
+    <rect x="42" y="98" width="256" height="318" rx="10" fill="none" stroke="#E5DAC8" stroke-width="0.9" />
+
+    <!-- Sage Washi Tape holding the portrait at top -->
+    <g transform="translate(115, 94) rotate(-3)">
+      <rect x="0" y="0" width="72" height="18" rx="2" fill="url(#washiTape)" stroke="#8FA98F" stroke-width="0.6" stroke-dasharray="2 2" />
+      <line x1="8" y1="0" x2="8" y2="18" stroke="#FAF5EB" stroke-width="0.8" stroke-opacity="0.5" />
+      <line x1="24" y1="0" x2="24" y2="18" stroke="#FAF5EB" stroke-width="0.8" stroke-opacity="0.5" />
+      <line x1="40" y1="0" x2="40" y2="18" stroke="#FAF5EB" stroke-width="0.8" stroke-opacity="0.5" />
+      <line x1="56" y1="0" x2="56" y2="18" stroke="#FAF5EB" stroke-width="0.8" stroke-opacity="0.5" />
+    </g>
+
+    <!-- Botanical Laurel Wreath & Cameo Frame Around Avatar -->
+    <circle cx="150" cy="182" r="74" fill="none" stroke="#8FA98F" stroke-width="1.4" stroke-dasharray="6 4" />
+    <circle cx="150" cy="182" r="70" fill="#EFE5D4" stroke="#B8A68E" stroke-width="1.6" />
     {avatar_element}
 
-    <!-- Verified Check Badge on Avatar Corner -->
-    <g transform="translate(196, 232)">
-      <circle cx="14" cy="14" r="14" fill="#0B1120" />
-      <circle cx="14" cy="14" r="11" fill="#00F5D4" />
-      <path d="M9.5 14.2L12.5 17.2L18.8 10.9" fill="none" stroke="#070913" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- Left & Right Pressed Fern Sprigs hugging the Cameo -->
+    <path d="M74 205 C64 185, 66 160, 78 140" fill="none" stroke="#5E8C6A" stroke-width="1.5" />
+    <ellipse cx="68" cy="188" rx="6" ry="3" transform="rotate(-35 68 188)" fill="#6B8E73" />
+    <ellipse cx="67" cy="170" rx="6" ry="3" transform="rotate(-15 67 170)" fill="#6B8E73" />
+    <ellipse cx="72" cy="152" rx="5.5" ry="2.8" transform="rotate(10 72 152)" fill="#6B8E73" />
+
+    <path d="M226 205 C236 185, 234 160, 222 140" fill="none" stroke="#5E8C6A" stroke-width="1.5" />
+    <ellipse cx="232" cy="188" rx="6" ry="3" transform="rotate(35 232 188)" fill="#6B8E73" />
+    <ellipse cx="233" cy="170" rx="6" ry="3" transform="rotate(15 233 170)" fill="#6B8E73" />
+    <ellipse cx="228" cy="152" rx="5.5" ry="2.8" transform="rotate(-10 228 152)" fill="#6B8E73" />
+
+    <!-- Terracotta Wax Seal Stamp on Portrait Corner -->
+    <g transform="translate(192, 224)">
+      <circle cx="18" cy="18" r="18" fill="url(#waxSealGrad)" />
+      <circle cx="18" cy="18" r="13.5" fill="none" stroke="#F4C7B8" stroke-width="0.9" stroke-dasharray="3 2" />
+      <!-- Tiny Wildflower inside Wax Seal -->
+      <circle cx="18" cy="18" r="2.6" fill="#FDE68A" />
+      <circle cx="18" cy="12" r="2.2" fill="#FAF5EB" fill-opacity="0.85" />
+      <circle cx="18" cy="24" r="2.2" fill="#FAF5EB" fill-opacity="0.85" />
+      <circle cx="12" cy="18" r="2.2" fill="#FAF5EB" fill-opacity="0.85" />
+      <circle cx="24" cy="18" r="2.2" fill="#FAF5EB" fill-opacity="0.85" />
     </g>
 
-    <!-- Metallic Smart Card Chip -->
-    <g transform="translate(242, 118)">
-      <rect x="0" y="0" width="44" height="34" rx="6" fill="url(#chipGrad)" stroke="#FEF3C7" stroke-width="0.6" stroke-opacity="0.6" />
-      <path d="M0 11 H44 M0 23 H44 M15 0 V34 M29 0 V34" stroke="#78350F" stroke-width="1" stroke-opacity="0.55" fill="none" />
-      <rect x="15" y="11" width="14" height="12" rx="2" fill="none" stroke="#78350F" stroke-width="1" stroke-opacity="0.65" />
+    <!-- Name & Handle in Warm Espresso Ink -->
+    <text x="170" y="286" text-anchor="middle" class="serif-title" fill="#3A2E28">{display_name}</text>
+    <text x="170" y="306" text-anchor="middle" class="serif-italic" fill="#5E8C6A">@{login} • Guild Member</text>
+
+    <!-- Decorative Divider with Chamomile Bud -->
+    <line x1="60" y1="320" x2="156" y2="320" stroke="#D5C7B2" stroke-width="1" />
+    <circle cx="170" cy="320" r="3.5" fill="#D49B54" />
+    <circle cx="170" cy="320" r="1.5" fill="#FAF5EB" />
+    <line x1="184" y1="320" x2="280" y2="320" stroke="#D5C7B2" stroke-width="1" />
+
+    <!-- Cottage Ledger Entries -->
+    <text x="58" y="344" class="typewriter-xs" fill="#8C7765">PLANTED ON</text>
+    <text x="282" y="344" text-anchor="end" class="typewriter-sm" fill="#3A2E28">{issued_date}</text>
+
+    <text x="58" y="368" class="typewriter-xs" fill="#8C7765">SEASONS</text>
+    <text x="282" y="368" text-anchor="end" class="typewriter-sm" fill="#5E8C6A">{uptime_str}</text>
+
+    <text x="58" y="392" class="typewriter-xs" fill="#8C7765">DWELLING</text>
+    <text x="282" y="392" text-anchor="end" class="typewriter-sm" fill="#6E5A4C">{location}</text>
+
+    <!-- RIGHT COLUMN: Field Notes, Apothecary Stat Tickets & Herbarium -->
+    <!-- Journal Entry Box -->
+    <rect x="324" y="92" width="496" height="92" rx="14" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.4" />
+    <!-- Corner Brass Pin -->
+    <circle cx="340" cy="108" r="3.2" fill="#D49B54" stroke="#8C6D46" stroke-width="0.8" />
+    <circle cx="804" cy="108" r="3.2" fill="#D49B54" stroke="#8C6D46" stroke-width="0.8" />
+
+    <text x="352" y="114" class="typewriter-xs" fill="#B85A43">CRAFT &amp; CALLING // FIELD NOTES</text>
+    <text x="344" y="135" class="serif-role" fill="#3A2E28">{role}</text>
+    <text x="344" y="155" class="serif-bio" fill="#6E5A4C">“{bio_lines[0]}</text>
+    <text x="344" y="172" class="serif-bio" fill="#6E5A4C">{bio_lines[1]}”</text>
+
+    <!-- 4 Apothecary / Seed Packet Stat Labels -->
+    <g transform="translate(324, 196)">
+      <!-- Ticket 1: Repos -->
+      <rect x="0" y="0" width="115" height="74" rx="12" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.3" />
+      <rect x="6" y="6" width="103" height="62" rx="8" fill="none" stroke="#E5DAC8" stroke-width="0.8" />
+      <circle cx="98" cy="18" r="4" fill="#5E8C6A" fill-opacity="0.25" />
+      <path d="M95 21 C97 16, 100 15, 102 14" stroke="#5E8C6A" stroke-width="1.2" fill="none" />
+      <text x="16" y="25" class="typewriter-xs" fill="#8C7765">NOTEBOOKS</text>
+      <text x="16" y="55" class="serif-stat" fill="#3A2E28">{repos_val}</text>
+
+      <!-- Ticket 2: Stars -->
+      <rect x="127" y="0" width="115" height="74" rx="12" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.3" />
+      <rect x="133" y="6" width="103" height="62" rx="8" fill="none" stroke="#E5DAC8" stroke-width="0.8" />
+      <circle cx="225" cy="18" r="4.5" fill="#D9A441" fill-opacity="0.3" />
+      <circle cx="225" cy="18" r="2" fill="#D9A441" />
+      <text x="143" y="25" class="typewriter-xs" fill="#8C7765">WILDFLOWERS</text>
+      <text x="143" y="55" class="serif-stat" fill="#B87D2B">{stars_val}</text>
+
+      <!-- Ticket 3: Followers -->
+      <rect x="254" y="0" width="115" height="74" rx="12" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.3" />
+      <rect x="260" y="6" width="103" height="62" rx="8" fill="none" stroke="#E5DAC8" stroke-width="0.8" />
+      <circle cx="352" cy="18" r="4" fill="#C47457" fill-opacity="0.25" />
+      <text x="270" y="25" class="typewriter-xs" fill="#8C7765">KINDRED</text>
+      <text x="270" y="55" class="serif-stat" fill="#4A6B53">{followers_val}</text>
+
+      <!-- Ticket 4: Forks -->
+      <rect x="381" y="0" width="115" height="74" rx="12" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.3" />
+      <rect x="387" y="6" width="103" height="62" rx="8" fill="none" stroke="#E5DAC8" stroke-width="0.8" />
+      <circle cx="479" cy="18" r="4" fill="#8E7394" fill-opacity="0.25" />
+      <text x="397" y="25" class="typewriter-xs" fill="#8C7765">CUTTINGS</text>
+      <text x="397" y="55" class="serif-stat" fill="#7A5C75">{forks_val}</text>
     </g>
 
-    <!-- Vertical Side Readout on Left Column -->
-    <text x="266" y="232" transform="rotate(90 266,232)" class="mono-xs" fill="#475569">CLEARANCE // L4</text>
+    <!-- Herbarium Specimen Language Bar -->
+    <rect x="324" y="282" width="496" height="86" rx="14" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.4" />
+    <text x="344" y="298" class="typewriter-xs" fill="#6E5A4C">HERBARIUM SPECIMENS // CRAFT &amp; LANGUAGES</text>
 
-    <!-- Handle & Name inside Left Column -->
-    <text x="54" y="290" class="sans-title" fill="#F8FAFC">{display_name}</text>
-    <text x="54" y="311" class="mono-sm" fill="#00F5D4">@{login}</text>
-
-    <line x1="54" y1="326" x2="290" y2="326" stroke="#1E293B" stroke-width="1" />
-
-    <!-- Issued / Uptime / Location Key-Values -->
-    <text x="54" y="348" class="mono-xs" fill="#64748B">ISSUED</text>
-    <text x="290" y="348" text-anchor="end" class="mono-sm" fill="#E2E8F0">{issued_date}</text>
-
-    <text x="54" y="372" class="mono-xs" fill="#64748B">TENURE</text>
-    <text x="290" y="372" text-anchor="end" class="mono-sm" fill="#38BDF8">{uptime_str}</text>
-
-    <text x="54" y="396" class="mono-xs" fill="#64748B">SECTOR</text>
-    <text x="290" y="396" text-anchor="end" class="mono-sm" fill="#CBD5E1">{location}</text>
-
-    <!-- RIGHT TELEMETRY COLUMN -->
-    <!-- Profile Summary Banner -->
-    <rect x="328" y="90" width="494" height="92" rx="14" fill="#0F172A" fill-opacity="0.68" stroke="#1E293B" stroke-width="1.2" />
-    <text x="348" y="114" class="mono-xs" fill="#A855F7">ROLE // DESIGNATION</text>
-    <text x="348" y="134" class="sans-role" fill="#F1F5F9">{role}</text>
-    <text x="348" y="155" class="sans-bio" fill="#94A3B8">{bio_lines[0]}</text>
-    <text x="348" y="172" class="sans-bio" fill="#94A3B8">{bio_lines[1]}</text>
-
-    <!-- 4 Live Telemetry Stat Pods -->
-    <g transform="translate(328, 194)">
-      <!-- Pod 1: Repositories -->
-      <rect x="0" y="0" width="114" height="74" rx="12" fill="#0F172A" fill-opacity="0.78" stroke="#1E293B" stroke-width="1.2" />
-      <path d="M0 12 A12 12 0 0 1 12 0 H40" fill="none" stroke="#00F5D4" stroke-width="2" />
-      <text x="16" y="25" class="mono-xs" fill="#64748B">REPOS</text>
-      <text x="16" y="56" class="mono-stat" fill="#F8FAFC">{repos_val}</text>
-
-      <!-- Pod 2: Stars Earned -->
-      <rect x="126" y="0" width="114" height="74" rx="12" fill="#0F172A" fill-opacity="0.78" stroke="#1E293B" stroke-width="1.2" />
-      <path d="M126 12 A12 12 0 0 1 138 0 H166" fill="none" stroke="#F59E0B" stroke-width="2" />
-      <text x="142" y="25" class="mono-xs" fill="#64748B">STARS</text>
-      <text x="142" y="56" class="mono-stat" fill="#FDE68A">{stars_val}</text>
-
-      <!-- Pod 3: Followers -->
-      <rect x="252" y="0" width="114" height="74" rx="12" fill="#0F172A" fill-opacity="0.78" stroke="#1E293B" stroke-width="1.2" />
-      <path d="M252 12 A12 12 0 0 1 264 0 H292" fill="none" stroke="#38BDF8" stroke-width="2" />
-      <text x="268" y="25" class="mono-xs" fill="#64748B">FOLLOWERS</text>
-      <text x="268" y="56" class="mono-stat" fill="#E0F2FE">{followers_val}</text>
-
-      <!-- Pod 4: Network Forks -->
-      <rect x="378" y="0" width="116" height="74" rx="12" fill="#0F172A" fill-opacity="0.78" stroke="#1E293B" stroke-width="1.2" />
-      <path d="M378 12 A12 12 0 0 1 390 0 H418" fill="none" stroke="#A855F7" stroke-width="2" />
-      <text x="394" y="25" class="mono-xs" fill="#64748B">FORKS</text>
-      <text x="394" y="56" class="mono-stat" fill="#F3E8FF">{forks_val}</text>
-    </g>
-
-    <!-- Language & Tech Spectrum Panel -->
-    <rect x="328" y="280" width="494" height="86" rx="14" fill="#0F172A" fill-opacity="0.68" stroke="#1E293B" stroke-width="1.2" />
-    <text x="340" y="296" class="mono-xs" fill="#64748B">LANGUAGE TELEMETRY // CODE DISTRIBUTION</text>
-
+    <rect x="343" y="304" width="458" height="13" rx="6.5" fill="none" stroke="#D5C7B2" stroke-width="1" />
     <g clip-path="url(#langBarClip)">
       {lang_rects_svg}
     </g>
     {lang_legends_svg}
 
-    <!-- Terminal Verification Console -->
-    <rect x="328" y="376" width="494" height="44" rx="10" fill="#050811" stroke="#1E293B" stroke-width="1.2" />
-    <circle cx="346" cy="398" r="4" fill="#EF4444" />
-    <circle cx="360" cy="398" r="4" fill="#F59E0B" />
-    <circle cx="374" cy="398" r="4" fill="#10B981" />
-    <text x="392" y="402" class="mono-sm" fill="#94A3B8">
-      <tspan fill="#00F5D4">{login}@github</tspan>:<tspan fill="#38BDF8">~</tspan>$ id --verify --sync-auto
-      <tspan fill="#10B981"> [OK]</tspan>
+    <!-- Cozy Postscript / Typewriter Note Ribbon -->
+    <rect x="324" y="378" width="496" height="44" rx="11" fill="#EFE5D4" stroke="#C7B69E" stroke-width="1.2" />
+    <!-- Vintage Quill / Tea Cup Motif -->
+    <g transform="translate(340, 390)">
+      <path d="M2 14 C2 6, 12 2, 18 2 C16 8, 12 14, 2 14 Z" fill="#5E8C6A" />
+      <path d="M0 16 L6 12" stroke="#8C5E45" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="368" y="405" class="serif-italic" fill="#4A3B32">
+      “Inked &amp; tended automatically by the woodland courier — all tallies verified.”
     </text>
-    <rect x="748" y="390" width="7" height="14" fill="#00F5D4" class="cursor-blink" />
+    <text x="804" y="404" text-anchor="end" class="typewriter-xs" fill="#5E8C6A">[SEALED ✓]</text>
 
-    <!-- Footer Bar: Auto-Sync Timestamp & Scannable Barcode -->
-    <line x1="34" y1="432" x2="822" y2="432" stroke="#1E293B" stroke-width="1" />
-    <text x="36" y="452" class="mono-xs" fill="#64748B">AUTO-GENERATED VIA GITHUB ACTIONS // SVG PROFILE ID ENGINE</text>
-    <text x="36" y="467" class="mono-xs" fill="#475569">LAST SYNC: {synced_at} • HTTPS://GITHUB.COM/{login.upper()}</text>
+    <!-- Footer: Library Postmark & Botanical Barcode -->
+    <line x1="36" y1="432" x2="820" y2="432" stroke="#D5C7B2" stroke-width="1" />
+    <text x="38" y="450" class="typewriter-xs" fill="#7D6B5D">POSTMARKED BY GITHUB ACTIONS • WOODLAND PARCEL SERVICE</text>
+    <text x="38" y="465" class="serif-italic" fill="#8C7765">Last pressed: {synced_at} • github.com/{login}</text>
 
-    <!-- Deterministic Barcode -->
+    <!-- Herbarium Stem Barcode -->
     {barcode_svg}
   </g>
 
-  <!-- Outer Holographic Frame Border -->
-  <rect x="12" y="12" width="836" height="476" rx="22" fill="none" stroke="url(#borderGrad)" stroke-width="2" />
+  <!-- Outer Warm Walnut & Sage Frame -->
+  <rect x="12" y="12" width="836" height="476" rx="22" fill="none" stroke="#8C6D46" stroke-width="2.2" />
 
-  <!-- Corner HUD Brackets -->
-  <path d="M 12 44 V 28 A 16 16 0 0 1 28 12 H 48" fill="none" stroke="#00F5D4" stroke-width="3" stroke-linecap="round" />
-  <path d="M 848 44 V 28 A 16 16 0 0 0 832 12 H 812" fill="none" stroke="#00F5D4" stroke-width="3" stroke-linecap="round" />
-  <path d="M 12 456 V 472 A 16 16 0 0 0 28 488 H 48" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" />
-  <path d="M 848 456 V 472 A 16 16 0 0 1 832 488 H 812" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" />
+  <!-- Corner Botanical Flourishes -->
+  <path d="M 12 42 V 28 A 16 16 0 0 1 28 12 H 44" fill="none" stroke="#D49B54" stroke-width="2.8" stroke-linecap="round" />
+  <path d="M 848 42 V 28 A 16 16 0 0 0 832 12 H 816" fill="none" stroke="#D49B54" stroke-width="2.8" stroke-linecap="round" />
+  <path d="M 12 458 V 472 A 16 16 0 0 0 28 488 H 44" fill="none" stroke="#5E8C6A" stroke-width="2.8" stroke-linecap="round" />
+  <path d="M 848 458 V 472 A 16 16 0 0 1 832 488 H 816" fill="none" stroke="#5E8C6A" stroke-width="2.8" stroke-linecap="round" />
 </svg>
 """
 
@@ -577,7 +615,7 @@ def main() -> None:
     data = collect_profile_data(username, token)
     svg_content = render_svg(data)
     OUTPUT_PATH.write_text(svg_content, encoding="utf-8")
-    print(f"Generated {OUTPUT_PATH} for @{data['login']} (ID #{data['id']})")
+    print(f"Generated cottagecore {OUTPUT_PATH} for @{data['login']} (ID #{data['id']})")
 
 
 if __name__ == "__main__":

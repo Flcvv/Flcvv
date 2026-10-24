@@ -1,56 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 500" width="100%" height="100%" role="img" aria-label="Flcvv GitHub Developer ID Card">
-  <title>Flcvv — GitHub Developer Identity Card (#347167228)</title>
-  <desc>Automated SVG Developer Profile ID for @Flcvv, featuring live GitHub metrics, language telemetry, and verification metadata.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 500" width="100%" height="100%" role="img" aria-label="Flcvv Cottagecore Guild Identity Card">
+  <title>Flcvv — Woodland Atelier &amp; Guild Identity Card (#347167228)</title>
+  <desc>Aesthetic cottagecore botanical profile card for @Flcvv, automatically tended via GitHub Actions.</desc>
 
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#070913" />
-      <stop offset="45%" stop-color="#0D1326" />
-      <stop offset="100%" stop-color="#080B16" />
+    <!-- Warm Linen & Pressed Parchment Gradients -->
+    <linearGradient id="parchmentBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCF8F0" />
+      <stop offset="50%" stop-color="#F6EFE2" />
+      <stop offset="100%" stop-color="#EFE5D4" />
     </linearGradient>
 
-    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00F5D4" stop-opacity="0.85" />
-      <stop offset="50%" stop-color="#7C3AED" stop-opacity="0.65" />
-      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.85" />
+    <linearGradient id="cardstockPanel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFDF9" stop-opacity="0.88" />
+      <stop offset="100%" stop-color="#F7F0E4" stop-opacity="0.88" />
     </linearGradient>
 
-    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#00F5D4" />
-      <stop offset="55%" stop-color="#3B82F6" />
-      <stop offset="100%" stop-color="#A855F7" />
+    <linearGradient id="sageHeader" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4A6B53" />
+      <stop offset="50%" stop-color="#5E8066" />
+      <stop offset="100%" stop-color="#4F6F58" />
     </linearGradient>
 
-    <linearGradient id="chipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FDE68A" />
-      <stop offset="50%" stop-color="#F59E0B" />
-      <stop offset="100%" stop-color="#B45309" />
+    <linearGradient id="waxSealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D47A63" />
+      <stop offset="55%" stop-color="#B85A43" />
+      <stop offset="100%" stop-color="#8F3F2B" />
     </linearGradient>
 
-    <linearGradient id="scanBeam" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#00F5D4" stop-opacity="0" />
-      <stop offset="50%" stop-color="#00F5D4" stop-opacity="0.09" />
-      <stop offset="100%" stop-color="#00F5D4" stop-opacity="0" />
+    <linearGradient id="washiTape" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A8C2A5" stop-opacity="0.72" />
+      <stop offset="50%" stop-color="#BBD1B8" stop-opacity="0.82" />
+      <stop offset="100%" stop-color="#A2BCA0" stop-opacity="0.72" />
     </linearGradient>
 
-    <linearGradient id="avatarFallbackGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1E293B" />
-      <stop offset="100%" stop-color="#334155" />
-    </linearGradient>
-
-    <radialGradient id="glowCyan" cx="18%" cy="32%" r="45%">
-      <stop offset="0%" stop-color="#00F5D4" stop-opacity="0.16" />
-      <stop offset="100%" stop-color="#00F5D4" stop-opacity="0" />
+    <radialGradient id="sunlightGlow" cx="15%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#FCE8B2" stop-opacity="0.38" />
+      <stop offset="100%" stop-color="#FCE8B2" stop-opacity="0" />
     </radialGradient>
 
-    <radialGradient id="glowViolet" cx="85%" cy="75%" r="50%">
-      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.18" />
-      <stop offset="100%" stop-color="#7C3AED" stop-opacity="0" />
+    <radialGradient id="meadowGlow" cx="88%" cy="82%" r="45%">
+      <stop offset="0%" stop-color="#C5DAC1" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#C5DAC1" stop-opacity="0" />
     </radialGradient>
 
-    <pattern id="cyberGrid" width="28" height="28" patternUnits="userSpaceOnUse">
-      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#1E293B" stroke-width="0.7" stroke-opacity="0.55" />
-      <circle cx="28" cy="28" r="0.9" fill="#334155" fill-opacity="0.6" />
+    <!-- Subtle Linen & Botanical Dot Grid Pattern -->
+    <pattern id="linenGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="12" r="0.8" fill="#C7B8A3" fill-opacity="0.45" />
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#E5DAC8" stroke-width="0.5" stroke-opacity="0.55" />
     </pattern>
 
     <clipPath id="cardClip">
@@ -58,267 +54,312 @@
     </clipPath>
 
     <clipPath id="avatarClip">
-      <rect x="72" y="108" width="144" height="144" rx="26" />
+      <rect x="82" y="114" width="136" height="136" rx="68" />
     </clipPath>
 
     <clipPath id="langBarClip">
-      <rect x="340" y="302" width="468" height="10" rx="5" />
+      <rect x="344" y="305" width="456" height="11" rx="5.5" />
     </clipPath>
 
     <style>
-      .sans-title {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
-        font-weight: 800;
-        font-size: 26px;
-        letter-spacing: -0.4px;
-      }
-      .sans-role {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
-        font-weight: 600;
-        font-size: 13px;
+      .serif-title {
+        font-family: Georgia, "Playfair Display", "Palatino Linotype", "Book Antiqua", serif;
+        font-weight: 700;
+        font-size: 25px;
         letter-spacing: 0.2px;
       }
-      .sans-bio {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+      .serif-italic {
+        font-family: Georgia, "Playfair Display", "Palatino Linotype", serif;
+        font-style: italic;
         font-weight: 400;
+        font-size: 13.5px;
+      }
+      .serif-role {
+        font-family: Georgia, "Playfair Display", "Palatino Linotype", serif;
+        font-weight: 700;
+        font-size: 14.5px;
+      }
+      .serif-bio {
+        font-family: Georgia, "Palatino Linotype", "Book Antiqua", serif;
         font-size: 12.5px;
       }
-      .mono-xs {
-        font-family: "JetBrains Mono", "Fira Code", "SFMono-Regular", Consolas, monospace;
+      .serif-stat {
+        font-family: Georgia, "Playfair Display", serif;
+        font-weight: 700;
+        font-size: 23px;
+      }
+      .serif-initials {
+        font-family: Georgia, serif;
+        font-weight: 700;
+        font-size: 42px;
+      }
+      .typewriter-xs {
+        font-family: "Courier Prime", "Courier New", Courier, monospace;
         font-size: 10px;
-        letter-spacing: 1.2px;
+        letter-spacing: 1.1px;
+        font-weight: 700;
+      }
+      .typewriter-sm {
+        font-family: "Courier Prime", "Courier New", Courier, monospace;
+        font-size: 11.5px;
         font-weight: 600;
       }
-      .mono-sm {
-        font-family: "JetBrains Mono", "Fira Code", "SFMono-Regular", Consolas, monospace;
-        font-size: 11.5px;
-        font-weight: 500;
+      @keyframes swayBreeze {
+        0%, 100% { transform: rotate(0deg); }
+        50% { transform: rotate(2.5deg); }
       }
-      .mono-stat {
-        font-family: "JetBrains Mono", "Fira Code", "SFMono-Regular", Consolas, monospace;
-        font-size: 22px;
-        font-weight: 800;
+      @keyframes fireflyGlow {
+        0%, 100% { opacity: 0.25; transform: translateY(0px) scale(0.9); }
+        50% { opacity: 0.9; transform: translateY(-3px) scale(1.15); }
       }
-      .title-lg {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-size: 44px;
-        font-weight: 800;
+      @keyframes gentlePulse {
+        0%, 100% { opacity: 0.95; }
+        50% { opacity: 0.45; }
       }
-      @keyframes pulseDot {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.35; transform: scale(0.88); }
-      }
-      @keyframes blinkCursor {
-        0%, 49% { opacity: 1; }
-        50%, 100% { opacity: 0; }
-      }
-      @keyframes orbitSpin {
-        from { stroke-dashoffset: 0; }
-        to { stroke-dashoffset: -120; }
-      }
-      @keyframes scanSweep {
-        0% { transform: translateY(-480px); }
-        100% { transform: translateY(520px); }
-      }
-      .pulse-dot {
-        animation: pulseDot 2.4s ease-in-out infinite;
+      .botanical-sway {
+        animation: swayBreeze 6s ease-in-out infinite;
         transform-origin: center;
         transform-box: fill-box;
       }
-      .cursor-blink {
-        animation: blinkCursor 1.1s step-end infinite;
+      .firefly-1 {
+        animation: fireflyGlow 4.2s ease-in-out infinite;
       }
-      .hud-ring {
-        stroke-dasharray: 18 12;
-        animation: orbitSpin 8s linear infinite;
+      .firefly-2 {
+        animation: fireflyGlow 5.5s ease-in-out 1.4s infinite;
       }
-      .scan-bar {
-        animation: scanSweep 9s linear infinite;
+      .hearth-pulse {
+        animation: gentlePulse 3s ease-in-out infinite;
       }
     </style>
   </defs>
 
-  <!-- Card Base & Ambient Lighting -->
+  <!-- Main Pressed Parchment Card -->
   <g clip-path="url(#cardClip)">
-    <rect x="12" y="12" width="836" height="476" rx="22" fill="url(#bgGrad)" />
-    <rect x="12" y="12" width="836" height="476" fill="url(#cyberGrid)" />
-    <rect x="12" y="12" width="836" height="476" fill="url(#glowCyan)" />
-    <rect x="12" y="12" width="836" height="476" fill="url(#glowViolet)" />
+    <rect x="12" y="12" width="836" height="476" rx="22" fill="url(#parchmentBg)" />
+    <rect x="12" y="12" width="836" height="476" fill="url(#linenGrid)" />
+    <rect x="12" y="12" width="836" height="476" fill="url(#sunlightGlow)" />
+    <rect x="12" y="12" width="836" height="476" fill="url(#meadowGlow)" />
 
-    <!-- Subtle Vertical Holographic Scanline -->
-    <rect x="12" y="12" width="836" height="90" fill="url(#scanBeam)" class="scan-bar" />
+    <!-- Inner Vintage Stitched Border -->
+    <rect x="20" y="20" width="820" height="460" rx="16" fill="none" stroke="#C7B69E" stroke-width="1.2" stroke-dasharray="5 4" />
 
-    <!-- Top Identity Header Bar -->
-    <rect x="12" y="12" width="836" height="58" fill="#0B1120" fill-opacity="0.82" />
-    <line x1="12" y1="70" x2="848" y2="70" stroke="#1E293B" stroke-width="1.5" />
-    <rect x="12" y="69" width="290" height="2" fill="url(#accentGrad)" />
+    <!-- Top Sage Botanical Header Banner -->
+    <rect x="12" y="12" width="836" height="60" fill="url(#sageHeader)" />
+    <line x1="12" y1="72" x2="848" y2="72" stroke="#D49B54" stroke-width="2" />
+    <line x1="12" y1="75" x2="848" y2="75" stroke="#8C6D46" stroke-width="0.7" stroke-dasharray="3 3" />
 
-    <!-- Header Left: GitHub Emblem + Credential Type -->
-    <g transform="translate(36, 30)">
-      <path fill="#00F5D4" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-      <text x="36" y="11" class="mono-xs" fill="#00F5D4">GITHUB DEVELOPER CREDENTIAL // VERIFIED ID</text>
-      <text x="36" y="24" class="mono-xs" fill="#64748B">SERIAL #347167228 • NODE U_kgDOFLFZ_A</text>
+    <!-- Header Left: Botanical Leaf Emblem + Guild Title -->
+    <g transform="translate(36, 26)">
+      <!-- Hand-drawn Oak/Sage Sprig Icon -->
+      <path d="M4 26 C8 16, 16 8, 26 4 C22 14, 15 22, 4 26 Z" fill="#E9DFC9" />
+      <path d="M4 26 C12 24, 20 16, 26 4" fill="none" stroke="#4A6B53" stroke-width="1.3" />
+      <circle cx="24" cy="6" r="2.2" fill="#F3C978" />
+      <circle cx="9" cy="14" r="1.8" fill="#F3C978" />
+      <text x="38" y="13" class="typewriter-xs" fill="#FAF5EB">WOODLAND ATELIER &amp; CODING GUILD // REGISTRY CARD</text>
+      <text x="38" y="27" class="serif-italic" fill="#DFD5C0">Folio No. 347167228 • Herbarium Node U_kgDOFLFZ_A</text>
     </g>
 
-    <!-- Header Right: Live Status Pill -->
-    <g transform="translate(664, 27)">
-      <rect x="0" y="0" width="154" height="28" rx="14" fill="#0F172A" stroke="#1E293B" stroke-width="1.2" />
-      <circle cx="18" cy="14" r="4.5" fill="#10B981" class="pulse-dot" />
-      <text x="31" y="18" class="mono-xs" fill="#A7F3D0">STATUS: ACTIVE</text>
+    <!-- Header Right: Cozy Hearth Status Pill -->
+    <g transform="translate(642, 28)">
+      <rect x="0" y="0" width="176" height="28" rx="14" fill="#3A5441" stroke="#8FA98F" stroke-width="1.2" />
+      <circle cx="18" cy="14" r="4.5" fill="#F3C978" class="hearth-pulse" />
+      <text x="30" y="18" class="typewriter-xs" fill="#FAF5EB">AT THE HEARTH • COZY</text>
     </g>
 
-    <!-- LEFT IDENTITY COLUMN (Badge Photo + Chip + Core Metadata) -->
-    <rect x="34" y="90" width="276" height="330" rx="16" fill="#0F172A" fill-opacity="0.72" stroke="#1E293B" stroke-width="1.2" />
-
-    <!-- Animated HUD Frame Around Avatar -->
-    <rect x="66" y="102" width="156" height="156" rx="30" fill="none" stroke="url(#accentGrad)" stroke-width="1.8" class="hud-ring" />
-    <rect x="70" y="106" width="148" height="148" rx="27" fill="none" stroke="#334155" stroke-width="1" />
-    <image x="72" y="108" width="144" height="144" href="data:image/png;base64,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" clip-path="url(#avatarClip)" preserveAspectRatio="xMidYMid slice" />
-
-    <!-- Verified Check Badge on Avatar Corner -->
-    <g transform="translate(196, 232)">
-      <circle cx="14" cy="14" r="14" fill="#0B1120" />
-      <circle cx="14" cy="14" r="11" fill="#00F5D4" />
-      <path d="M9.5 14.2L12.5 17.2L18.8 10.9" fill="none" stroke="#070913" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- Decorative Background Botanical Vines (Top-Right & Bottom-Left) -->
+    <g class="botanical-sway" opacity="0.28" transform="translate(770, 78)">
+      <path d="M40 0 Q20 35 0 65" fill="none" stroke="#5E8C6A" stroke-width="1.8" />
+      <path d="M28 18 C15 12, 8 20, 22 26 Z" fill="#5E8C6A" />
+      <path d="M18 36 C32 32, 36 42, 20 44 Z" fill="#5E8C6A" />
+      <path d="M8 52 C-4 46, -6 56, 6 60 Z" fill="#5E8C6A" />
+      <circle cx="0" cy="65" r="4" fill="#D49B54" />
     </g>
 
-    <!-- Metallic Smart Card Chip -->
-    <g transform="translate(242, 118)">
-      <rect x="0" y="0" width="44" height="34" rx="6" fill="url(#chipGrad)" stroke="#FEF3C7" stroke-width="0.6" stroke-opacity="0.6" />
-      <path d="M0 11 H44 M0 23 H44 M15 0 V34 M29 0 V34" stroke="#78350F" stroke-width="1" stroke-opacity="0.55" fill="none" />
-      <rect x="15" y="11" width="14" height="12" rx="2" fill="none" stroke="#78350F" stroke-width="1" stroke-opacity="0.65" />
+    <!-- Floating Golden Pollen / Fireflies -->
+    <circle cx="318" cy="112" r="2.5" fill="#D9A441" class="firefly-1" />
+    <circle cx="808" cy="272" r="2.2" fill="#D9A441" class="firefly-2" />
+    <circle cx="52" cy="410" r="2.4" fill="#D9A441" class="firefly-1" />
+
+    <!-- LEFT COLUMN: Pressed Botanical Portrait & Library Metadata -->
+    <rect x="36" y="92" width="268" height="330" rx="14" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.4" />
+    <rect x="42" y="98" width="256" height="318" rx="10" fill="none" stroke="#E5DAC8" stroke-width="0.9" />
+
+    <!-- Sage Washi Tape holding the portrait at top -->
+    <g transform="translate(115, 94) rotate(-3)">
+      <rect x="0" y="0" width="72" height="18" rx="2" fill="url(#washiTape)" stroke="#8FA98F" stroke-width="0.6" stroke-dasharray="2 2" />
+      <line x1="8" y1="0" x2="8" y2="18" stroke="#FAF5EB" stroke-width="0.8" stroke-opacity="0.5" />
+      <line x1="24" y1="0" x2="24" y2="18" stroke="#FAF5EB" stroke-width="0.8" stroke-opacity="0.5" />
+      <line x1="40" y1="0" x2="40" y2="18" stroke="#FAF5EB" stroke-width="0.8" stroke-opacity="0.5" />
+      <line x1="56" y1="0" x2="56" y2="18" stroke="#FAF5EB" stroke-width="0.8" stroke-opacity="0.5" />
     </g>
 
-    <!-- Vertical Side Readout on Left Column -->
-    <text x="266" y="232" transform="rotate(90 266,232)" class="mono-xs" fill="#475569">CLEARANCE // L4</text>
+    <!-- Botanical Laurel Wreath & Cameo Frame Around Avatar -->
+    <circle cx="150" cy="182" r="74" fill="none" stroke="#8FA98F" stroke-width="1.4" stroke-dasharray="6 4" />
+    <circle cx="150" cy="182" r="70" fill="#EFE5D4" stroke="#B8A68E" stroke-width="1.6" />
+    <image x="82" y="114" width="136" height="136" href="data:image/png;base64,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" clip-path="url(#avatarClip)" preserveAspectRatio="xMidYMid slice" />
 
-    <!-- Handle & Name inside Left Column -->
-    <text x="54" y="290" class="sans-title" fill="#F8FAFC">Flcvv</text>
-    <text x="54" y="311" class="mono-sm" fill="#00F5D4">@Flcvv</text>
+    <!-- Left & Right Pressed Fern Sprigs hugging the Cameo -->
+    <path d="M74 205 C64 185, 66 160, 78 140" fill="none" stroke="#5E8C6A" stroke-width="1.5" />
+    <ellipse cx="68" cy="188" rx="6" ry="3" transform="rotate(-35 68 188)" fill="#6B8E73" />
+    <ellipse cx="67" cy="170" rx="6" ry="3" transform="rotate(-15 67 170)" fill="#6B8E73" />
+    <ellipse cx="72" cy="152" rx="5.5" ry="2.8" transform="rotate(10 72 152)" fill="#6B8E73" />
 
-    <line x1="54" y1="326" x2="290" y2="326" stroke="#1E293B" stroke-width="1" />
+    <path d="M226 205 C236 185, 234 160, 222 140" fill="none" stroke="#5E8C6A" stroke-width="1.5" />
+    <ellipse cx="232" cy="188" rx="6" ry="3" transform="rotate(35 232 188)" fill="#6B8E73" />
+    <ellipse cx="233" cy="170" rx="6" ry="3" transform="rotate(15 233 170)" fill="#6B8E73" />
+    <ellipse cx="228" cy="152" rx="5.5" ry="2.8" transform="rotate(-10 228 152)" fill="#6B8E73" />
 
-    <!-- Issued / Uptime / Location Key-Values -->
-    <text x="54" y="348" class="mono-xs" fill="#64748B">ISSUED</text>
-    <text x="290" y="348" text-anchor="end" class="mono-sm" fill="#E2E8F0">2026.10.24</text>
-
-    <text x="54" y="372" class="mono-xs" fill="#64748B">TENURE</text>
-    <text x="290" y="372" text-anchor="end" class="mono-sm" fill="#38BDF8">DAY 01 // GENESIS</text>
-
-    <text x="54" y="396" class="mono-xs" fill="#64748B">SECTOR</text>
-    <text x="290" y="396" text-anchor="end" class="mono-sm" fill="#CBD5E1">Earth // Cloud Native</text>
-
-    <!-- RIGHT TELEMETRY COLUMN -->
-    <!-- Profile Summary Banner -->
-    <rect x="328" y="90" width="494" height="92" rx="14" fill="#0F172A" fill-opacity="0.68" stroke="#1E293B" stroke-width="1.2" />
-    <text x="348" y="114" class="mono-xs" fill="#A855F7">ROLE // DESIGNATION</text>
-    <text x="348" y="134" class="sans-role" fill="#F1F5F9">Software Engineer &amp; Open Source Builder</text>
-    <text x="348" y="155" class="sans-bio" fill="#94A3B8">Building clean systems, creative code, and automated</text>
-    <text x="348" y="172" class="sans-bio" fill="#94A3B8">workflows on GitHub.</text>
-
-    <!-- 4 Live Telemetry Stat Pods -->
-    <g transform="translate(328, 194)">
-      <!-- Pod 1: Repositories -->
-      <rect x="0" y="0" width="114" height="74" rx="12" fill="#0F172A" fill-opacity="0.78" stroke="#1E293B" stroke-width="1.2" />
-      <path d="M0 12 A12 12 0 0 1 12 0 H40" fill="none" stroke="#00F5D4" stroke-width="2" />
-      <text x="16" y="25" class="mono-xs" fill="#64748B">REPOS</text>
-      <text x="16" y="56" class="mono-stat" fill="#F8FAFC">01</text>
-
-      <!-- Pod 2: Stars Earned -->
-      <rect x="126" y="0" width="114" height="74" rx="12" fill="#0F172A" fill-opacity="0.78" stroke="#1E293B" stroke-width="1.2" />
-      <path d="M126 12 A12 12 0 0 1 138 0 H166" fill="none" stroke="#F59E0B" stroke-width="2" />
-      <text x="142" y="25" class="mono-xs" fill="#64748B">STARS</text>
-      <text x="142" y="56" class="mono-stat" fill="#FDE68A">00</text>
-
-      <!-- Pod 3: Followers -->
-      <rect x="252" y="0" width="114" height="74" rx="12" fill="#0F172A" fill-opacity="0.78" stroke="#1E293B" stroke-width="1.2" />
-      <path d="M252 12 A12 12 0 0 1 264 0 H292" fill="none" stroke="#38BDF8" stroke-width="2" />
-      <text x="268" y="25" class="mono-xs" fill="#64748B">FOLLOWERS</text>
-      <text x="268" y="56" class="mono-stat" fill="#E0F2FE">00</text>
-
-      <!-- Pod 4: Network Forks -->
-      <rect x="378" y="0" width="116" height="74" rx="12" fill="#0F172A" fill-opacity="0.78" stroke="#1E293B" stroke-width="1.2" />
-      <path d="M378 12 A12 12 0 0 1 390 0 H418" fill="none" stroke="#A855F7" stroke-width="2" />
-      <text x="394" y="25" class="mono-xs" fill="#64748B">FORKS</text>
-      <text x="394" y="56" class="mono-stat" fill="#F3E8FF">00</text>
+    <!-- Terracotta Wax Seal Stamp on Portrait Corner -->
+    <g transform="translate(192, 224)">
+      <circle cx="18" cy="18" r="18" fill="url(#waxSealGrad)" />
+      <circle cx="18" cy="18" r="13.5" fill="none" stroke="#F4C7B8" stroke-width="0.9" stroke-dasharray="3 2" />
+      <!-- Tiny Wildflower inside Wax Seal -->
+      <circle cx="18" cy="18" r="2.6" fill="#FDE68A" />
+      <circle cx="18" cy="12" r="2.2" fill="#FAF5EB" fill-opacity="0.85" />
+      <circle cx="18" cy="24" r="2.2" fill="#FAF5EB" fill-opacity="0.85" />
+      <circle cx="12" cy="18" r="2.2" fill="#FAF5EB" fill-opacity="0.85" />
+      <circle cx="24" cy="18" r="2.2" fill="#FAF5EB" fill-opacity="0.85" />
     </g>
 
-    <!-- Language & Tech Spectrum Panel -->
-    <rect x="328" y="280" width="494" height="86" rx="14" fill="#0F172A" fill-opacity="0.68" stroke="#1E293B" stroke-width="1.2" />
-    <text x="340" y="296" class="mono-xs" fill="#64748B">LANGUAGE TELEMETRY // CODE DISTRIBUTION</text>
+    <!-- Name & Handle in Warm Espresso Ink -->
+    <text x="170" y="286" text-anchor="middle" class="serif-title" fill="#3A2E28">Flcvv</text>
+    <text x="170" y="306" text-anchor="middle" class="serif-italic" fill="#5E8C6A">@Flcvv • Guild Member</text>
 
+    <!-- Decorative Divider with Chamomile Bud -->
+    <line x1="60" y1="320" x2="156" y2="320" stroke="#D5C7B2" stroke-width="1" />
+    <circle cx="170" cy="320" r="3.5" fill="#D49B54" />
+    <circle cx="170" cy="320" r="1.5" fill="#FAF5EB" />
+    <line x1="184" y1="320" x2="280" y2="320" stroke="#D5C7B2" stroke-width="1" />
+
+    <!-- Cottage Ledger Entries -->
+    <text x="58" y="344" class="typewriter-xs" fill="#8C7765">PLANTED ON</text>
+    <text x="282" y="344" text-anchor="end" class="typewriter-sm" fill="#3A2E28">Oct 24, 2026</text>
+
+    <text x="58" y="368" class="typewriter-xs" fill="#8C7765">SEASONS</text>
+    <text x="282" y="368" text-anchor="end" class="typewriter-sm" fill="#5E8C6A">First Sprout • Day 1</text>
+
+    <text x="58" y="392" class="typewriter-xs" fill="#8C7765">DWELLING</text>
+    <text x="282" y="392" text-anchor="end" class="typewriter-sm" fill="#6E5A4C">Sunlit Meadow • Cloud Cottage</text>
+
+    <!-- RIGHT COLUMN: Field Notes, Apothecary Stat Tickets & Herbarium -->
+    <!-- Journal Entry Box -->
+    <rect x="324" y="92" width="496" height="92" rx="14" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.4" />
+    <!-- Corner Brass Pin -->
+    <circle cx="340" cy="108" r="3.2" fill="#D49B54" stroke="#8C6D46" stroke-width="0.8" />
+    <circle cx="804" cy="108" r="3.2" fill="#D49B54" stroke="#8C6D46" stroke-width="0.8" />
+
+    <text x="352" y="114" class="typewriter-xs" fill="#B85A43">CRAFT &amp; CALLING // FIELD NOTES</text>
+    <text x="344" y="135" class="serif-role" fill="#3A2E28">Software Artisan &amp; Woodland Tinkerer</text>
+    <text x="344" y="155" class="serif-bio" fill="#6E5A4C">“Tending digital gardens, crafting cozy code, and</text>
+    <text x="344" y="172" class="serif-bio" fill="#6E5A4C">brewing quiet automations by the hearth.”</text>
+
+    <!-- 4 Apothecary / Seed Packet Stat Labels -->
+    <g transform="translate(324, 196)">
+      <!-- Ticket 1: Repos -->
+      <rect x="0" y="0" width="115" height="74" rx="12" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.3" />
+      <rect x="6" y="6" width="103" height="62" rx="8" fill="none" stroke="#E5DAC8" stroke-width="0.8" />
+      <circle cx="98" cy="18" r="4" fill="#5E8C6A" fill-opacity="0.25" />
+      <path d="M95 21 C97 16, 100 15, 102 14" stroke="#5E8C6A" stroke-width="1.2" fill="none" />
+      <text x="16" y="25" class="typewriter-xs" fill="#8C7765">NOTEBOOKS</text>
+      <text x="16" y="55" class="serif-stat" fill="#3A2E28">1</text>
+
+      <!-- Ticket 2: Stars -->
+      <rect x="127" y="0" width="115" height="74" rx="12" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.3" />
+      <rect x="133" y="6" width="103" height="62" rx="8" fill="none" stroke="#E5DAC8" stroke-width="0.8" />
+      <circle cx="225" cy="18" r="4.5" fill="#D9A441" fill-opacity="0.3" />
+      <circle cx="225" cy="18" r="2" fill="#D9A441" />
+      <text x="143" y="25" class="typewriter-xs" fill="#8C7765">WILDFLOWERS</text>
+      <text x="143" y="55" class="serif-stat" fill="#B87D2B">0</text>
+
+      <!-- Ticket 3: Followers -->
+      <rect x="254" y="0" width="115" height="74" rx="12" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.3" />
+      <rect x="260" y="6" width="103" height="62" rx="8" fill="none" stroke="#E5DAC8" stroke-width="0.8" />
+      <circle cx="352" cy="18" r="4" fill="#C47457" fill-opacity="0.25" />
+      <text x="270" y="25" class="typewriter-xs" fill="#8C7765">KINDRED</text>
+      <text x="270" y="55" class="serif-stat" fill="#4A6B53">0</text>
+
+      <!-- Ticket 4: Forks -->
+      <rect x="381" y="0" width="115" height="74" rx="12" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.3" />
+      <rect x="387" y="6" width="103" height="62" rx="8" fill="none" stroke="#E5DAC8" stroke-width="0.8" />
+      <circle cx="479" cy="18" r="4" fill="#8E7394" fill-opacity="0.25" />
+      <text x="397" y="25" class="typewriter-xs" fill="#8C7765">CUTTINGS</text>
+      <text x="397" y="55" class="serif-stat" fill="#7A5C75">0</text>
+    </g>
+
+    <!-- Herbarium Specimen Language Bar -->
+    <rect x="324" y="282" width="496" height="86" rx="14" fill="url(#cardstockPanel)" stroke="#D5C7B2" stroke-width="1.4" />
+    <text x="344" y="298" class="typewriter-xs" fill="#6E5A4C">HERBARIUM SPECIMENS // CRAFT &amp; LANGUAGES</text>
+
+    <rect x="343" y="304" width="458" height="13" rx="6.5" fill="none" stroke="#D5C7B2" stroke-width="1" />
     <g clip-path="url(#langBarClip)">
-      <rect x="340.00" y="302" width="468.00" height="10" fill="#3572A5" />
+      <rect x="344.00" y="305" width="456.00" height="11" fill="#5E8C6A" />
     </g>
-    <g transform="translate(340, 332)"><circle cx="6" cy="-4" r="4.5" fill="#3572A5" /><text x="16" y="0" class="mono-sm" fill="#E2E8F0">Python</text><text x="215" y="0" text-anchor="end" class="mono-sm" fill="#94A3B8">100.0%</text></g>
+    <g transform="translate(344, 336)"><path d="M2 -4 C2 -8, 8 -8, 10 -4 C8 0, 2 0, 2 -4 Z" fill="#5E8C6A" /><text x="16" y="0" class="typewriter-sm" fill="#4A3B32">Python</text><text x="210" y="0" text-anchor="end" class="typewriter-sm" fill="#847062">100.0%</text></g>
 
-    <!-- Terminal Verification Console -->
-    <rect x="328" y="376" width="494" height="44" rx="10" fill="#050811" stroke="#1E293B" stroke-width="1.2" />
-    <circle cx="346" cy="398" r="4" fill="#EF4444" />
-    <circle cx="360" cy="398" r="4" fill="#F59E0B" />
-    <circle cx="374" cy="398" r="4" fill="#10B981" />
-    <text x="392" y="402" class="mono-sm" fill="#94A3B8">
-      <tspan fill="#00F5D4">Flcvv@github</tspan>:<tspan fill="#38BDF8">~</tspan>$ id --verify --sync-auto
-      <tspan fill="#10B981"> [OK]</tspan>
+    <!-- Cozy Postscript / Typewriter Note Ribbon -->
+    <rect x="324" y="378" width="496" height="44" rx="11" fill="#EFE5D4" stroke="#C7B69E" stroke-width="1.2" />
+    <!-- Vintage Quill / Tea Cup Motif -->
+    <g transform="translate(340, 390)">
+      <path d="M2 14 C2 6, 12 2, 18 2 C16 8, 12 14, 2 14 Z" fill="#5E8C6A" />
+      <path d="M0 16 L6 12" stroke="#8C5E45" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="368" y="405" class="serif-italic" fill="#4A3B32">
+      “Inked &amp; tended automatically by the woodland courier — all tallies verified.”
     </text>
-    <rect x="748" y="390" width="7" height="14" fill="#00F5D4" class="cursor-blink" />
+    <text x="804" y="404" text-anchor="end" class="typewriter-xs" fill="#5E8C6A">[SEALED ✓]</text>
 
-    <!-- Footer Bar: Auto-Sync Timestamp & Scannable Barcode -->
-    <line x1="34" y1="432" x2="822" y2="432" stroke="#1E293B" stroke-width="1" />
-    <text x="36" y="452" class="mono-xs" fill="#64748B">AUTO-GENERATED VIA GITHUB ACTIONS // SVG PROFILE ID ENGINE</text>
-    <text x="36" y="467" class="mono-xs" fill="#475569">LAST SYNC: 2026-10-24 01:46 UTC • HTTPS://GITHUB.COM/FLCVV</text>
+    <!-- Footer: Library Postmark & Botanical Barcode -->
+    <line x1="36" y1="432" x2="820" y2="432" stroke="#D5C7B2" stroke-width="1" />
+    <text x="38" y="450" class="typewriter-xs" fill="#7D6B5D">POSTMARKED BY GITHUB ACTIONS • WOODLAND PARCEL SERVICE</text>
+    <text x="38" y="465" class="serif-italic" fill="#8C7765">Last pressed: Oct 24, 2026 • 01:49 UTC • github.com/Flcvv</text>
 
-    <!-- Deterministic Barcode -->
-    <rect x="575" y="438" width="2" height="24" rx="0.5" fill="#00F5D4" fill-opacity="0.45" />
-      <rect x="580" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.93" />
-      <rect x="585" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.69" />
-      <rect x="590" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.69" />
-      <rect x="595" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.93" />
-      <rect x="601" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.45" />
-      <rect x="607" y="438" width="1" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.81" />
-      <rect x="610" y="438" width="3" height="24" rx="0.5" fill="#00F5D4" fill-opacity="0.57" />
-      <rect x="616" y="438" width="1" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.81" />
-      <rect x="620" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.57" />
-      <rect x="624" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.45" />
-      <rect x="629" y="438" width="1" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.45" />
-      <rect x="633" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.69" />
-      <rect x="638" y="438" width="1" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.81" />
-      <rect x="641" y="438" width="2" height="24" rx="0.5" fill="#00F5D4" fill-opacity="0.93" />
-      <rect x="645" y="438" width="1" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.93" />
-      <rect x="649" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.93" />
-      <rect x="655" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.81" />
-      <rect x="660" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.57" />
-      <rect x="665" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.57" />
-      <rect x="671" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.45" />
-      <rect x="676" y="438" width="2" height="24" rx="0.5" fill="#00F5D4" fill-opacity="0.45" />
-      <rect x="681" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.45" />
-      <rect x="687" y="438" width="1" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.57" />
-      <rect x="691" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.93" />
-      <rect x="696" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.69" />
-      <rect x="700" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.93" />
-      <rect x="705" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.45" />
-      <rect x="710" y="438" width="3" height="24" rx="0.5" fill="#00F5D4" fill-opacity="0.45" />
-      <rect x="716" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.81" />
-      <rect x="722" y="438" width="1" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.45" />
-      <rect x="725" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.45" />
-      <rect x="731" y="438" width="1" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.57" />
-      <rect x="735" y="438" width="1" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.69" />
-      <rect x="739" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.69" />
-      <rect x="743" y="438" width="1" height="24" rx="0.5" fill="#00F5D4" fill-opacity="0.81" />
-      <rect x="747" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.93" />
-      <rect x="752" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.45" />
-      <rect x="757" y="438" width="3" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.57" />
-      <rect x="763" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.57" />
-      <rect x="768" y="438" width="1" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.57" />
-      <rect x="771" y="438" width="2" height="24" rx="0.5" fill="#94A3B8" fill-opacity="0.69" />
+    <!-- Herbarium Stem Barcode -->
+    <rect x="580" y="436" width="2" height="22" rx="0.8" fill="#5E8C6A" fill-opacity="0.45" />
+      <rect x="585" y="436" width="3" height="22" rx="0.8" fill="#8C5E45" fill-opacity="0.85" />
+      <rect x="591" y="436" width="2" height="22" rx="0.8" fill="#A68A71" fill-opacity="0.65" />
+      <rect x="595" y="436" width="2" height="22" rx="0.8" fill="#C47457" fill-opacity="0.65" />
+      <rect x="600" y="436" width="1" height="22" rx="0.8" fill="#5E8C6A" fill-opacity="0.85" />
+      <rect x="604" y="436" width="2" height="22" rx="0.8" fill="#8C5E45" fill-opacity="0.45" />
+      <rect x="609" y="436" width="1" height="22" rx="0.8" fill="#A68A71" fill-opacity="0.75" />
+      <rect x="612" y="436" width="1" height="22" rx="0.8" fill="#C47457" fill-opacity="0.55" />
+      <rect x="616" y="436" width="3" height="22" rx="0.8" fill="#5E8C6A" fill-opacity="0.75" />
+      <rect x="622" y="436" width="2" height="22" rx="0.8" fill="#8C5E45" fill-opacity="0.55" />
+      <rect x="626" y="436" width="3" height="22" rx="0.8" fill="#A68A71" fill-opacity="0.45" />
+      <rect x="632" y="436" width="3" height="22" rx="0.8" fill="#C47457" fill-opacity="0.45" />
+      <rect x="638" y="436" width="3" height="22" rx="0.8" fill="#5E8C6A" fill-opacity="0.65" />
+      <rect x="643" y="436" width="2" height="22" rx="0.8" fill="#8C5E45" fill-opacity="0.75" />
+      <rect x="647" y="436" width="1" height="22" rx="0.8" fill="#A68A71" fill-opacity="0.85" />
+      <rect x="650" y="436" width="1" height="22" rx="0.8" fill="#C47457" fill-opacity="0.85" />
+      <rect x="654" y="436" width="1" height="22" rx="0.8" fill="#5E8C6A" fill-opacity="0.85" />
+      <rect x="658" y="436" width="1" height="22" rx="0.8" fill="#8C5E45" fill-opacity="0.75" />
+      <rect x="662" y="436" width="3" height="22" rx="0.8" fill="#A68A71" fill-opacity="0.55" />
+      <rect x="667" y="436" width="1" height="22" rx="0.8" fill="#C47457" fill-opacity="0.55" />
+      <rect x="671" y="436" width="1" height="22" rx="0.8" fill="#5E8C6A" fill-opacity="0.45" />
+      <rect x="675" y="436" width="2" height="22" rx="0.8" fill="#8C5E45" fill-opacity="0.45" />
+      <rect x="680" y="436" width="1" height="22" rx="0.8" fill="#A68A71" fill-opacity="0.45" />
+      <rect x="684" y="436" width="3" height="22" rx="0.8" fill="#C47457" fill-opacity="0.55" />
+      <rect x="690" y="436" width="2" height="22" rx="0.8" fill="#5E8C6A" fill-opacity="0.85" />
+      <rect x="695" y="436" width="3" height="22" rx="0.8" fill="#8C5E45" fill-opacity="0.65" />
+      <rect x="700" y="436" width="1" height="22" rx="0.8" fill="#A68A71" fill-opacity="0.85" />
+      <rect x="704" y="436" width="3" height="22" rx="0.8" fill="#C47457" fill-opacity="0.45" />
+      <rect x="709" y="436" width="1" height="22" rx="0.8" fill="#5E8C6A" fill-opacity="0.45" />
+      <rect x="713" y="436" width="2" height="22" rx="0.8" fill="#8C5E45" fill-opacity="0.75" />
+      <rect x="718" y="436" width="1" height="22" rx="0.8" fill="#A68A71" fill-opacity="0.45" />
+      <rect x="721" y="436" width="1" height="22" rx="0.8" fill="#C47457" fill-opacity="0.45" />
+      <rect x="725" y="436" width="3" height="22" rx="0.8" fill="#5E8C6A" fill-opacity="0.55" />
+      <rect x="731" y="436" width="1" height="22" rx="0.8" fill="#8C5E45" fill-opacity="0.65" />
+      <rect x="735" y="436" width="3" height="22" rx="0.8" fill="#A68A71" fill-opacity="0.65" />
+      <rect x="740" y="436" width="3" height="22" rx="0.8" fill="#C47457" fill-opacity="0.75" />
+      <rect x="746" y="436" width="2" height="22" rx="0.8" fill="#5E8C6A" fill-opacity="0.85" />
+      <rect x="751" y="436" width="1" height="22" rx="0.8" fill="#8C5E45" fill-opacity="0.45" />
   </g>
 
-  <!-- Outer Holographic Frame Border -->
-  <rect x="12" y="12" width="836" height="476" rx="22" fill="none" stroke="url(#borderGrad)" stroke-width="2" />
+  <!-- Outer Warm Walnut & Sage Frame -->
+  <rect x="12" y="12" width="836" height="476" rx="22" fill="none" stroke="#8C6D46" stroke-width="2.2" />
 
-  <!-- Corner HUD Brackets -->
-  <path d="M 12 44 V 28 A 16 16 0 0 1 28 12 H 48" fill="none" stroke="#00F5D4" stroke-width="3" stroke-linecap="round" />
-  <path d="M 848 44 V 28 A 16 16 0 0 0 832 12 H 812" fill="none" stroke="#00F5D4" stroke-width="3" stroke-linecap="round" />
-  <path d="M 12 456 V 472 A 16 16 0 0 0 28 488 H 48" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" />
-  <path d="M 848 456 V 472 A 16 16 0 0 1 832 488 H 812" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" />
+  <!-- Corner Botanical Flourishes -->
+  <path d="M 12 42 V 28 A 16 16 0 0 1 28 12 H 44" fill="none" stroke="#D49B54" stroke-width="2.8" stroke-linecap="round" />
+  <path d="M 848 42 V 28 A 16 16 0 0 0 832 12 H 816" fill="none" stroke="#D49B54" stroke-width="2.8" stroke-linecap="round" />
+  <path d="M 12 458 V 472 A 16 16 0 0 0 28 488 H 44" fill="none" stroke="#5E8C6A" stroke-width="2.8" stroke-linecap="round" />
+  <path d="M 848 458 V 472 A 16 16 0 0 1 832 488 H 816" fill="none" stroke="#5E8C6A" stroke-width="2.8" stroke-linecap="round" />
 </svg>
